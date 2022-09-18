@@ -1,0 +1,21 @@
+Package: rstan.dev
+Title: A header-only interface to Stan
+Version: 0.0.0.9000
+Authors@R: 
+    person("Andrew", "Johnson", , "andrew.johnson@arjohnsonau.com", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
+SystemRequirements: pandoc, C++14
+NeedsCompilation: no
+Imports:
+    cpp11,
+    posterior,
+    purrr,
+    readr,
+    RcppParallel,
+    RcppEigen,
+    BH,
+    brio
