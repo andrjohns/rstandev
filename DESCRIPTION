@@ -19,3 +19,5 @@ Imports:
     RcppEigen,
     BH,
     brio
+URL: https://github.com/andrjohns/rstan.dev
+BugReports: https://github.com/andrjohns/rstan.dev/issues
