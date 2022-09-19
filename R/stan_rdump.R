@@ -25,12 +25,13 @@ data_list2array <- function(x) {
   aperm(x, c(lendimx1 + 1L, seq_len(lendimx1)))
 }
 
-stan_rdump <- function(list, envir = parent.frame()) {
+stan_rdump <- function(list) {
   l2 <- NULL
   addnlpat <- paste0("(.{1,", 100, "})(\\s|$)")
   dump_string <- ""
-  for (v in list) {
-    vv <- get(v, envir)
+  var_names <- names(list)
+  for (v in var_names) {
+    vv <- list[[v]]
 
     if (is.data.frame(vv)) {
       vv <- data.matrix(vv)

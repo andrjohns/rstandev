@@ -9,8 +9,7 @@ SEXP var_context(std::string rdump_string) {
   return var_ptr;
 }
 
-[[cpp11::register]]
-SEXP new_model(std::string rdump_string, unsigned int seed) {
+cpp11::external_pointer<stan_model> new_model(std::string rdump_string, unsigned int seed) {
   std::istringstream rdump_stream(rdump_string);
   stan::io::dump var_context(rdump_stream);
   std::shared_ptr<stan::io::var_context> data_ptr
@@ -25,15 +24,15 @@ SEXP new_model(std::string rdump_string, unsigned int seed) {
 }
 
 [[cpp11::register]]
-double log_prob(SEXP model_ptr, std::vector<double> upars) {
-  cpp11::external_pointer<stan_model> ptr(model_ptr);
+double log_prob(std::string rdump_string, std::vector<double> upars) {
+  cpp11::external_pointer<stan_model> ptr = new_model(rdump_string, 1);
   Eigen::VectorXd upars_vec = stan::math::to_vector(upars);
   return ptr->log_prob<false, true>(upars_vec);
 }
 
 [[cpp11::register]]
-cpp11::writable::doubles grad_log_prob(SEXP model_ptr, std::vector<double> upars) {
-  cpp11::external_pointer<stan_model> ptr(model_ptr);
+cpp11::writable::doubles grad_log_prob(std::string rdump_string, std::vector<double> upars) {
+  cpp11::external_pointer<stan_model> ptr = new_model(rdump_string, 1);
   std::vector<double> gradients;
   std::vector<int> dummy_i;
   double lp = stan::model::log_prob_grad<false, true>(
