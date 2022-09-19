@@ -35,6 +35,13 @@ stanmodel <- R6::R6Class("stanmodel",
         rdump_string = stan_rdump(data_list)
       )
       self$env$get_dims(args)
+    },
+    unconstrain_pars = function(data_list, init_list) {
+      args <- list(
+        rdump_string = stan_rdump(data_list),
+        init_string = stan_rdump(init_list)
+      )
+      self$env$unconstrain_pars(args)
     }
   )
 )

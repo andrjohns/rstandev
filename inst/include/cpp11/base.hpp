@@ -1,20 +1,15 @@
-[[cpp11::register]]
-SEXP var_context(std::string rdump_string) {
+std::shared_ptr<stan::io::var_context> var_context(std::string rdump_string) {
   std::istringstream rdump_stream(rdump_string);
-  cpp11::external_pointer<stan::io::dump> var_ptr(new stan::io::dump(rdump_stream));
-  return var_ptr;
+  stan::io::dump data_context(rdump_stream);
+  return std::make_shared<stan::io::dump>(data_context);
 }
 
 [[cpp11::register]]
 SEXP new_model(std::string rdump_string,
                 unsigned int seed = 0) {
-  std::istringstream rdump_stream(rdump_string);
-  stan::io::dump var_context(rdump_stream);
-  std::shared_ptr<stan::io::var_context> data_ptr
-    = std::make_shared<stan::io::dump>(var_context);
   cpp11::external_pointer<stan_model> ptr(
       new stan_model(
-          *data_ptr,
+          *var_context(rdump_string),
           seed,
           &std::cout)
   );
