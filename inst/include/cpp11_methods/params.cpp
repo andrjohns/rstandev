@@ -35,3 +35,17 @@ cpp11::doubles unconstrain_pars(cpp11::list args_list) {
   cpp11::writable::doubles ret = std::move(vars);
   return ret;
 }
+
+[[cpp11::register]]
+cpp11::doubles constrain_pars(cpp11::list args_list) {
+  model_ptr_t ptr = get_model_ptr(args_list);
+  std::vector<double> params_r
+    = cpp11::as_cpp<std::vector<double>>(args_list["upars"]);
+  std::vector<int> params_i;
+  std::vector<double> vars;
+  boost::ecuyer1988 base_rng(static_cast<boost::uint32_t>(std::time(0)));
+
+  ptr->write_array(base_rng, params_r, params_i, vars);
+  cpp11::writable::doubles ret = std::move(vars);
+  return ret;
+}
