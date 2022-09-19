@@ -12,3 +12,5 @@
 #include <cpp11/doubles.hpp>
 #include <cpp11/strings.hpp>
 #include <cpp11/sexp.hpp>
+#include <cpp11/list.hpp>
+#include <cpp11/as.hpp>

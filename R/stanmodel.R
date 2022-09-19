@@ -11,7 +11,12 @@ stanmodel <- R6::R6Class("stanmodel",
       self$env <- compile_functions_into_env(cpp_locations)
     },
     log_prob = function(data_list, upars) {
-      self$env$log_prob(stan_rdump(data_list), upars)
+      args <- list(
+        model_ptr = self$env$new_model(stan_rdump(data_list), 1),
+        upars = upars
+      )
+
+      self$env$log_prob(args)
     },
     grad_log_prob = function(data_list, upars) {
       self$env$grad_log_prob(stan_rdump(data_list), upars)
