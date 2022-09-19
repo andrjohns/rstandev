@@ -6,7 +6,8 @@ SEXP var_context(std::string rdump_string) {
 }
 
 [[cpp11::register]]
-SEXP new_model(std::string rdump_string, unsigned int seed) {
+SEXP new_model(std::string rdump_string,
+                unsigned int seed = 0) {
   std::istringstream rdump_stream(rdump_string);
   stan::io::dump var_context(rdump_stream);
   std::shared_ptr<stan::io::var_context> data_ptr
@@ -25,6 +26,6 @@ model_ptr_t get_model_ptr(cpp11::list args_list) {
     return model_ptr_t(args_list["model_ptr"]);
   } else {
     std::string rdump_string = cpp11::as_cpp<std::string>(args_list["rdump_string"]);
-    return model_ptr_t(new_model(rdump_string, 1));
+    return model_ptr_t(new_model(rdump_string));
   }
 }

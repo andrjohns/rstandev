@@ -12,14 +12,29 @@ stanmodel <- R6::R6Class("stanmodel",
     },
     log_prob = function(data_list, upars) {
       args <- list(
-        model_ptr = self$env$new_model(stan_rdump(data_list), 1),
+        rdump_string = stan_rdump(data_list),
         upars = upars
       )
-
       self$env$log_prob(args)
     },
     grad_log_prob = function(data_list, upars) {
-      self$env$grad_log_prob(stan_rdump(data_list), upars)
+      args <- list(
+        rdump_string = stan_rdump(data_list),
+        upars = upars
+      )
+      self$env$grad_log_prob(args)
+    },
+    get_param_names = function(data_list) {
+      args <- list(
+        rdump_string = stan_rdump(data_list)
+      )
+      self$env$get_param_names(args)
+    },
+    get_param_dims = function(data_list) {
+      args <- list(
+        rdump_string = stan_rdump(data_list)
+      )
+      self$env$get_dims(args)
     }
   )
 )
