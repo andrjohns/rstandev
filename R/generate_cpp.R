@@ -17,7 +17,6 @@ generate_cpp <- function(hpp_code, standalone_funs = FALSE) {
     includes <- c(cpp_includes, cpp_typedefs, cpp_base_funs, cpp_methods)
   }
 
-
   cpp_code <- paste(c(hpp_code, includes), collapse = "\n")
   dir <- file.path(tempdir(), "stan_cpp11")
   if (dir.exists(dir)) {

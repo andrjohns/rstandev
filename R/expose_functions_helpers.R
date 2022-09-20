@@ -9,6 +9,7 @@ get_plain_rtn <- function(fun_body, model_lines) {
   rm_trailing_nullptr <- gsub(".*nullptr>[^,]", "", rtn_type)
   rm_operator <- gsub("operator().*", "", rtn_type)
   repl_dbl <- gsub("stan::promote_args_t<stan::base_type_t<T0__>>", "double", rm_operator)
+  repl_dbl <- gsub("stan::promote_args_t<T0__>", "double", repl_dbl)
   gsub("(^\\s|\\s$)", "", repl_dbl)
 }
 
