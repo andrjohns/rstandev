@@ -16,9 +16,15 @@ cxxflags <- function() {
     "-I", shQuote(system.file("include",package = "RcppEigen")),
     "-I", shQuote(system.file("include",package = "RcppParallel")),
     "-I", shQuote(system.file("include",package = "BH")),
+    "-I", shQuote(system.file("include",package = "cpp11")),
     "-D_REENTRANT",
     "-DRCPP_PARALLEL_USE_TBB=1",
-    "-DSTAN_THREADS"#,
+    "-DSTAN_THREADS",
+    "-Wno-deprecated-builtins",
+    "-Wno-deprecated-declarations",
+    "-Wno-unknown-attributes"
+
+    #,
     #"-DSTAN_OPENCL"
 )
 }

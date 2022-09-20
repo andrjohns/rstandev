@@ -5,13 +5,13 @@ stanmodel <- R6::R6Class("stanmodel",
     model_code = NULL,
     initialize = function(model_path = NULL, model_code = NULL) {
       if (is.null(model_code)) {
-        self$model_code <- paste(readLines(model_path), collapse = "\n")
+        self$model_code <- readr::read_file(model_path)
       } else {
         self$model_code <- model_code
       }
       self$hpp_code <- stanc(self$model_code)
       cpp_locations <- generate_cpp(self$hpp_code)
-      private$env <- compile_functions_into_env(cpp_locations)
+      private$env <- source_wrapper(cpp_locations, new.env())
 
       cpp_files <- list.files(file.path(cpp_locations$dir, "src"), pattern = ".cpp")
       base_cpp <- grep("cpp11", cpp_files, invert = TRUE, value = TRUE)
@@ -85,6 +85,21 @@ stanmodel <- R6::R6Class("stanmodel",
         source(file.path(dir, "R", "cpp11.R"), local = private$env)
         dyn.load(libpath, local = TRUE, now = TRUE)
       }
+    },
+    expose_functions = function() {
+      model_cpp <- stanc_context$call("stanc", "model", self$model_code, as.array("standalone-functions"))$result
+      model_lines <- strsplit(model_cpp, "\n", fixed = TRUE)[[1]]
+      funs <- grep("// [[stan::function]]", model_lines, fixed = TRUE)
+      funs <- c(funs, length(model_lines))
+
+      stan_funs <- purrr::map_chr(seq_len(length(funs) - 1), function(ind) {
+        fun_body <- model_lines[funs[ind]:(funs[ind + 1] - 1)]
+        prep_fun_cpp(fun_body, model_lines)
+      })
+
+      mod_stan_funs <- paste(c(model_lines[1:(funs[1] - 1)], stan_funs), collapse = "\n")
+      stan_cpp_locations <- generate_cpp(mod_stan_funs, standalone_funs = TRUE)
+      (source_wrapper(stan_cpp_locations, globalenv()))
     },
     sample = function(data_list, init_list, ...) {
       args <- sample_defaults()
