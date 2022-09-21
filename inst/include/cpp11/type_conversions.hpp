@@ -1,5 +1,36 @@
-namespace cpp11 {
+#include <boost/preprocessor.hpp>
 
+#define TO_SEQ_ELEM(z, n, data) (n)
+#define MAKE_INTEGER_SEQUENCE(n) BOOST_PP_REPEAT(n, TO_SEQ_ELEM, )
+
+#define STD_VECTOR_DEF(TYPE) std::vector<TYPE>
+
+#define OP(s, state, x) STD_VECTOR_DEF(state)
+
+#define NESTED_STD_TYPE(EIG_TYPE, LEVELS) \
+  BOOST_PP_SEQ_FOLD_LEFT(OP, EIG_TYPE, BOOST_PP_SEQ_TAIL(MAKE_INTEGER_SEQUENCE(LEVELS)))
+
+#define NESTED_EIG_DECL(EIG_TYPE, LEVELS) \
+  template <> \
+  NESTED_STD_TYPE(EIG_TYPE, LEVELS) as_cpp<NESTED_STD_TYPE(EIG_TYPE, LEVELS)>(SEXP cpp) { \
+    cpp11::writable::list cpp11_obj = cpp; \
+    NESTED_STD_TYPE(EIG_TYPE, LEVELS) rtn; \
+    for (auto&& elem : cpp11_obj) { \
+      rtn.push_back(as_cpp<std::decay_t<decltype(rtn[0])>>(elem)); \
+    } \
+    return rtn; \
+  } \
+
+#define NESTED_EIG_SEXP_DECL(EIG_TYPE, LEVELS) \
+  auto as_sexp(const NESTED_STD_TYPE(EIG_TYPE, LEVELS)& eigen_obj) { \
+    cpp11::writable::list eig_array; \
+    for (auto&& eig : eigen_obj) { \
+      eig_array.push_back(as_sexp(eig)); \
+    } \
+    return as_sexp(eig_array); \
+  } \
+
+namespace cpp11 {
   template <>
   Eigen::MatrixXd as_cpp<Eigen::MatrixXd>(SEXP cpp) {
     cpp11::writable::doubles_matrix<cpp11::by_column> cpp11_obj(cpp);
@@ -18,60 +49,17 @@ namespace cpp11 {
     return Eigen::Map<Eigen::RowVectorXd>(REAL(cpp11_obj.data()), cpp11_obj.size());
   }
 
-  template <>
-  std::vector<Eigen::Matrix<double, -1, 1>> as_cpp<std::vector<Eigen::Matrix<double, -1, 1>>>(SEXP cpp) {
-    cpp11::writable::list cpp11_obj = cpp;
-    std::vector<Eigen::Matrix<double, -1, 1>> rtn;
-    for (auto&& elem : cpp11_obj) {
-      rtn.push_back(as_cpp<Eigen::Matrix<double, -1, 1>>(elem));
-    }
-    return rtn;
-  }
-
-  template <>
-  std::vector<Eigen::Matrix<double, 1, -1>> as_cpp<std::vector<Eigen::Matrix<double, 1, -1>>>(SEXP cpp) {
-    cpp11::writable::list cpp11_obj = cpp;
-    std::vector<Eigen::Matrix<double, 1, -1>> rtn;
-    for (auto&& elem : cpp11_obj) {
-      rtn.push_back(as_cpp<Eigen::Matrix<double, 1, -1>>(elem));
-    }
-    return rtn;
-  }
-
-  template <>
-  std::vector<Eigen::Matrix<double, -1, -1>> as_cpp<std::vector<Eigen::Matrix<double, -1, -1>>>(SEXP cpp) {
-    cpp11::writable::list cpp11_obj = cpp;
-    std::vector<Eigen::Matrix<double, -1, -1>> rtn;
-    for (auto&& elem : cpp11_obj) {
-      rtn.push_back(as_cpp<Eigen::Matrix<double, -1, -1>>(elem));
-    }
-    return rtn;
-  }
-
-  template <typename T>
-  std::enable_if_t<
-    stan::is_std_vector<T>::value && stan::is_std_vector<stan::value_type_t<T>>::value,
-    T>
-  as_cpp(SEXP cpp) {
-    cpp11::writable::list cpp11_obj = cpp;
-    T rtn;
-    for (auto&& elem : cpp11_obj) {
-      rtn.push_back(as_cpp<stan::value_type_t<T>>(elem));
-    }
-    return rtn;
-  }
-
-  inline auto as_sexp(const Eigen::Matrix<double, -1, 1>& eigen_obj) {
+  inline auto as_sexp(const Eigen::VectorXd& eigen_obj) {
     cpp11::writable::doubles dbls({eigen_obj.data(), eigen_obj.data() + eigen_obj.size()});
     return as_sexp(dbls);
   }
 
-  inline auto as_sexp(const Eigen::Matrix<double, 1, -1>& eigen_obj) {
+  inline auto as_sexp(const Eigen::RowVectorXd& eigen_obj) {
     cpp11::writable::doubles dbls({eigen_obj.data(), eigen_obj.data() + eigen_obj.size()});
     return as_sexp(dbls);
   }
 
-  inline auto as_sexp(const Eigen::Matrix<double, -1, -1>& eigen_obj) {
+  inline auto as_sexp(const Eigen::MatrixXd& eigen_obj) {
     cpp11::writable::doubles_matrix<cpp11::by_column> mat(eigen_obj.rows(), eigen_obj.cols());
     for (size_t j = 0; j < eigen_obj.cols(); ++j) {
       for (size_t i = 0; i < eigen_obj.rows(); ++i) {
@@ -81,12 +69,33 @@ namespace cpp11 {
     return as_sexp(mat);
   }
 
-  template <int R, int C>
-  inline auto as_sexp(const std::vector<Eigen::Matrix<double, R, C>>& eigen_obj) {
-    cpp11::writable::list eig_array;
-    for (auto&& eig : eigen_obj) {
-      eig_array.push_back(as_sexp(eig));
-    }
-    return as_sexp(eig_array);
-  }
+  NESTED_EIG_DECL(Eigen::VectorXd, 2)
+  NESTED_EIG_DECL(Eigen::VectorXd, 3)
+  NESTED_EIG_DECL(Eigen::VectorXd, 4)
+  NESTED_EIG_DECL(Eigen::VectorXd, 5)
+
+  NESTED_EIG_DECL(Eigen::RowVectorXd, 2)
+  NESTED_EIG_DECL(Eigen::RowVectorXd, 3)
+  NESTED_EIG_DECL(Eigen::RowVectorXd, 4)
+  NESTED_EIG_DECL(Eigen::RowVectorXd, 5)
+
+  NESTED_EIG_DECL(Eigen::MatrixXd, 2)
+  NESTED_EIG_DECL(Eigen::MatrixXd, 3)
+  NESTED_EIG_DECL(Eigen::MatrixXd, 4)
+  NESTED_EIG_DECL(Eigen::MatrixXd, 5)
+
+  NESTED_EIG_SEXP_DECL(Eigen::VectorXd, 2)
+  NESTED_EIG_SEXP_DECL(Eigen::VectorXd, 3)
+  NESTED_EIG_SEXP_DECL(Eigen::VectorXd, 4)
+  NESTED_EIG_SEXP_DECL(Eigen::VectorXd, 5)
+
+  NESTED_EIG_SEXP_DECL(Eigen::RowVectorXd, 2)
+  NESTED_EIG_SEXP_DECL(Eigen::RowVectorXd, 3)
+  NESTED_EIG_SEXP_DECL(Eigen::RowVectorXd, 4)
+  NESTED_EIG_SEXP_DECL(Eigen::RowVectorXd, 5)
+
+  NESTED_EIG_SEXP_DECL(Eigen::MatrixXd, 2)
+  NESTED_EIG_SEXP_DECL(Eigen::MatrixXd, 3)
+  NESTED_EIG_SEXP_DECL(Eigen::MatrixXd, 4)
+  NESTED_EIG_SEXP_DECL(Eigen::MatrixXd, 5)
 }
