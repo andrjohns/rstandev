@@ -18,6 +18,7 @@ Imports:
     RcppParallel,
     RcppEigen,
     BH,
+    sundialr,
     brio,
     R6,
     V8,
