@@ -1,14 +1,18 @@
 #' @export
-stanmodel <- R6::R6Class("stanmodel",
+stanmodel <- R6::R6Class(
+  "stanmodel",
+  lock_objects = FALSE,
   public = list(
     hpp_code = NULL,
     model_code = NULL,
-    initialize = function(model_path = NULL, model_code = NULL) {
+    initialize = function(model_path = NULL, model_code = NULL,
+                          include_paths = NULL) {
       if (is.null(model_code)) {
-        self$model_code <- readr::read_file(model_path)
+        model_code_raw <- readr::read_file(model_path)
       } else {
-        self$model_code <- model_code
+        model_code_raw <- model_code
       }
+      self$model_code <- insert_includes(model_code_raw, include_paths)
       self$hpp_code <- stanc(self$model_code)
       cpp_locations <- generate_cpp(self$hpp_code)
       private$env <- source_wrapper(cpp_locations, new.env())
@@ -86,8 +90,8 @@ stanmodel <- R6::R6Class("stanmodel",
         dyn.load(libpath, local = TRUE, now = TRUE)
       }
     },
-    expose_functions = function() {
-      model_cpp <- stanc_context$call("stanc", "model", self$model_code, as.array("standalone-functions"))$result
+    expose_functions = function(global = FALSE) {
+      model_cpp <- stanc(self$model_code, standalone_functions = TRUE)
       model_lines <- strsplit(model_cpp, "\n", fixed = TRUE)[[1]]
       funs <- grep("// [[stan::function]]", model_lines, fixed = TRUE)
       funs <- c(funs, length(model_lines))
@@ -99,7 +103,16 @@ stanmodel <- R6::R6Class("stanmodel",
 
       mod_stan_funs <- paste(c(model_lines[1:(funs[1] - 1)], stan_funs), collapse = "\n")
       stan_cpp_locations <- generate_cpp(mod_stan_funs, standalone_funs = TRUE)
-      (source_wrapper(stan_cpp_locations, globalenv()))
+      if (global) {
+        invisible(source_wrapper(stan_cpp_locations, globalenv()))
+      } else {
+        private$standalone_env <- source_wrapper(stan_cpp_locations, new.env())
+        purrr::walk(stan_funs, function(fun) {
+          fun_name <- decor::parse_cpp_function(fun, is_attribute = TRUE)$name
+          self[[fun_name]] <- private$standalone_env[[fun_name]]
+        })
+        invisible(NULL)
+      }
     },
     sample = function(data_list, init_list, ...) {
       args <- sample_defaults()
@@ -120,6 +133,7 @@ stanmodel <- R6::R6Class("stanmodel",
   ),
   private = list(
     env = NULL,
+    standalone_env = NULL,
     dynlib_basename = NULL,
     dynlib_ext = NULL,
     dynlib_bytes = NULL,
