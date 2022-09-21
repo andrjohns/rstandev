@@ -8,7 +8,7 @@ get_plain_rtn <- function(fun_body, model_lines) {
   rtn_type <- paste0(model_lines[struct_rtn:struct_op_start], collapse = " ")
   rm_trailing_nullptr <- gsub(".*nullptr>[^,]", "", rtn_type)
   rm_operator <- gsub("operator().*", "", rtn_type)
-  repl_dbl <- gsub("T[0-9]__", "double", rm_operator)
+  repl_dbl <- gsub("T[0-9*]__", "double", rm_operator)
   gsub("(^\\s|\\s$)", "", repl_dbl)
 }
 
