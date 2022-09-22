@@ -15,7 +15,8 @@ namespace rstandev {
 
   auto lookup_function(std::string fun_name) {
     static const std::unordered_map<std::string, std::function<int(cpp11::list)>> methods_index = {
-      {"hmc_nuts_dense_e_adapt", apply_fun<NutsDenseAdaptT>}
+      {"hmc_nuts_dense_e_adapt", apply_fun<NutsDenseAdaptT>},
+      {"hmc_nuts_dense_e", apply_fun<NutsDenseT>}
     };
 
     return methods_index.find(fun_name)->second;

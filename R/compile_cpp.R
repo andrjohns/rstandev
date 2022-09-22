@@ -27,8 +27,8 @@ compile_cpp <- function(cpp_locations, env, return_env = TRUE) {
   cpp_functions_definitions <- cpp11env$generate_cpp_functions(funs, package = name)
 
   includes <- c('#include "cpp11/declarations.hpp"',
-                "#include <stan/math/prim/meta.hpp>",
                 '#include <helpers/as_cpp_eigen.hpp>',
+                '#include <stan/math/prim/meta.hpp>',
                 "using namespace ::cpp11;",
                 cpp_functions_definitions)
 
