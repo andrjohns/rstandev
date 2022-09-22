@@ -73,22 +73,24 @@ std::vector<double> initialize(Model& model, const InitContext& init, RNG& rng,
                                stan::callbacks::writer& init_writer) {
   std::vector<double> unconstrained;
   std::vector<int> disc_vector;
-
   bool is_fully_initialized = true;
   bool any_initialized = false;
   std::vector<std::string> param_names;
   model.get_param_names(param_names);
+  /*
   for (size_t n = 0; n < param_names.size(); n++) {
     is_fully_initialized &= init.contains_r(param_names[n]);
     any_initialized |= init.contains_r(param_names[n]);
   }
-
+*/
   bool is_initialized_with_zero = init_radius == 0.0;
 
   int MAX_INIT_TRIES
       = is_fully_initialized || is_initialized_with_zero ? 1 : 100;
   int num_init_tries = 0;
+
   for (; num_init_tries < MAX_INIT_TRIES; num_init_tries++) {
+      /*
     std::stringstream msg;
     try {
       stan::io::random_var_context random_context(model, rng, init_radius,
@@ -208,11 +210,12 @@ std::vector<double> initialize(Model& model, const InitContext& init, RNG& rng,
       logger.info("");
     }
     if (gradient_ok) {
-      init_writer(unconstrained);
+      //init_writer(unconstrained);
       return unconstrained;
     }
+    */
   }
-
+  /*
   if (!is_initialized_with_zero) {
     logger.info("");
     std::stringstream msg;
@@ -226,6 +229,8 @@ std::vector<double> initialize(Model& model, const InitContext& init, RNG& rng,
         " or reparameterizing the model.");
   }
   throw std::domain_error("Initialization failed.");
+  */
+ return std::vector<double>(1);
 }
 
 }  // namespace util

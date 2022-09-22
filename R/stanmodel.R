@@ -125,7 +125,7 @@ stanmodel <- R6::R6Class(
       args$model_ptr <- private$env$new_model(stan_rdump(data_list),
                                             args$random_seed)
       args$rdump_init <- stan_rdump(init_list)
-      private$env$sample(args)
+      private$env$stan_methods_wrapper("hmc_nuts_dense_e_adapt", args)
 
       outputs <- paste0(args$output, "_", 0:(args$num_chains - 1), ".csv")
       stanfit$new(self, private, outputs, args$model_ptr)

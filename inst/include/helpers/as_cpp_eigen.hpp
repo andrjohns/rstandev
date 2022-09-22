@@ -1,3 +1,11 @@
+#ifndef RSTANDEV_HELPERS_AS_CPP_EIGEN_HPP
+#define RSTANDEV_HELPERS_AS_CPP_EIGEN_HPP
+
+#include <stan/math/prim/fun/Eigen.hpp>
+#include <cpp11/matrix.hpp>
+#include <cpp11/doubles.hpp>
+#include <cpp11/sexp.hpp>
+#include <cpp11/as.hpp>
 #include <boost/preprocessor.hpp>
 
 #define TO_SEQ_ELEM(z, n, data) (n)
@@ -98,4 +106,6 @@ namespace cpp11 {
   NESTED_EIG_SEXP_DECL(Eigen::MatrixXd, 3)
   NESTED_EIG_SEXP_DECL(Eigen::MatrixXd, 4)
   NESTED_EIG_SEXP_DECL(Eigen::MatrixXd, 5)
-}
+} //namespace cpp11
+
+#endif

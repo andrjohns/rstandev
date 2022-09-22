@@ -1,6 +1,14 @@
+#include <helpers/get_model_ptr.hpp>
+#include <stan/model/log_prob_grad.hpp>
+#include <cpp11/external_pointer.hpp>
+#include <cpp11/as.hpp>
+#include <cpp11/list.hpp>
+#include <cpp11/doubles.hpp>
+#include <vector>
+
 [[cpp11::register]]
 double log_prob(cpp11::list args_list) {
-  model_ptr_t ptr = get_model_ptr(args_list);
+  cpp11::external_pointer<stan_model> ptr = rstandev::get_model_ptr<stan_model>(args_list);
   std::vector<double> upars
     = cpp11::as_cpp<std::vector<double>>(args_list["upars"]);
   std::vector<int> params_i;
@@ -9,7 +17,7 @@ double log_prob(cpp11::list args_list) {
 
 [[cpp11::register]]
 cpp11::writable::doubles grad_log_prob(cpp11::list args_list) {
-  model_ptr_t ptr = get_model_ptr(args_list);
+  cpp11::external_pointer<stan_model> ptr = rstandev::get_model_ptr<stan_model>(args_list);
   std::vector<double> upars
     = cpp11::as_cpp<std::vector<double>>(args_list["upars"]);
   std::vector<int> params_i;

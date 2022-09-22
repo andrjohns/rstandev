@@ -233,6 +233,7 @@ int hmc_nuts_dense_e_adapt(
   cont_vectors.reserve(num_chains);
   std::vector<sample_t> samplers;
   samplers.reserve(num_chains);
+
   try {
     for (int i = 0; i < num_chains; ++i) {
       rngs.emplace_back(util::create_rng(random_seed, init_chain_id + i));
@@ -335,6 +336,7 @@ int hmc_nuts_dense_e_adapt(
     std::vector<InitWriter>& init_writer,
     std::vector<SampleWriter>& sample_writer,
     std::vector<DiagnosticWriter>& diagnostic_writer) {
+
   if (num_chains == 1) {
     return hmc_nuts_dense_e_adapt(
         model, *init[0], random_seed, init_chain_id, init_radius, num_warmup,
