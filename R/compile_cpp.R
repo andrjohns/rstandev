@@ -1,4 +1,4 @@
-source_wrapper <- function(cpp_locations, env, return_env = TRUE) {
+compile_cpp <- function(cpp_locations, env, return_env = TRUE) {
   cpp11env <- rlang::ns_env("cpp11")
   dir <- cpp_locations$dir
   file <- basename(cpp_locations$file)

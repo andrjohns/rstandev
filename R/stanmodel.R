@@ -15,7 +15,7 @@ stanmodel <- R6::R6Class(
       self$model_code <- insert_includes(model_code_raw, include_paths)
       self$hpp_code <- stanc(self$model_code)
       cpp_locations <- generate_cpp(self$hpp_code)
-      private$env <- source_wrapper(cpp_locations, new.env())
+      private$env <- compile_cpp(cpp_locations, new.env())
 
       cpp_files <- list.files(file.path(cpp_locations$dir, "src"), pattern = ".cpp")
       base_cpp <- grep("cpp11", cpp_files, invert = TRUE, value = TRUE)
@@ -104,9 +104,9 @@ stanmodel <- R6::R6Class(
       mod_stan_funs <- paste(c(model_lines[1:(funs[1] - 1)], stan_funs), collapse = "\n")
       stan_cpp_locations <- generate_cpp(mod_stan_funs, standalone_funs = TRUE)
       if (global) {
-        invisible(source_wrapper(stan_cpp_locations, globalenv()))
+        invisible(compile_cpp(stan_cpp_locations, globalenv(), return_env = FALSE))
       } else {
-        private$standalone_env <- source_wrapper(stan_cpp_locations, new.env())
+        private$standalone_env <- compile_cpp(stan_cpp_locations, new.env())
         purrr::walk(stan_funs, function(fun) {
           fun_name <- decor::parse_cpp_function(fun, is_attribute = TRUE)$name
           self[[fun_name]] <- private$standalone_env[[fun_name]]
