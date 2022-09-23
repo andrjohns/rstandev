@@ -13,7 +13,12 @@ stanmodel <- R6::R6Class(
         model_code_raw <- model_code
       }
       self$model_code <- insert_includes(model_code_raw, include_paths)
-      self$hpp_code <- stanc(self$model_code)
+    },
+    compile = function(standalone_functions = FALSE,
+                  use_opencl = FALSE, optim_level = 0,
+                  allow_undefined = FALSE, warn_pedantic = FALSE,
+                  warn_uninitialized = FALSE, external_cpp = NULL) {
+      self$hpp_code <- stanc(self$model_code, allow_undefined = allow_undefined, external_cpp = external_cpp)
       cpp_locations <- generate_cpp(self$hpp_code)
       private$env <- compile_cpp(cpp_locations, new.env())
 
@@ -140,3 +145,13 @@ stanmodel <- R6::R6Class(
     cpp11_export_def = NULL
   )
 )
+
+#' @export
+stan_model <- function(model_path = NULL, model_code = NULL,
+                        include_paths = NULL, ...) {
+  st <- stanmodel$new(model_path = model_path,
+                      model_code = model_code,
+                      include_paths = include_paths)
+  st$compile(...)
+  return(stn)
+}
