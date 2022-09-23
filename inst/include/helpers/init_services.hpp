@@ -5,6 +5,7 @@
 #include <helpers/make_init_contexts.hpp>
 
 namespace rstandev {
+  template <typename F, stan::require_same_t<F, NutsDenseAdaptT>* = nullptr>
   auto init_services(cpp11::writable::list args) {
     size_t num_chains = cpp11::as_cpp<size_t>(args["num_chains"]);
 
@@ -37,6 +38,42 @@ namespace rstandev {
 
     return std::make_tuple(
       rstandev::make_init_contexts(args),
+      interrupt_ptr,
+      str_logger_ptr,
+      init_writer_ptr,
+      sample_writers,
+      diagnostic_writers
+    );
+  }
+
+  template <typename F, stan::require_not_same_t<F, NutsDenseAdaptT>* = nullptr>
+  auto init_services(cpp11::writable::list args) {
+    size_t num_chains = cpp11::as_cpp<size_t>(args["num_chains"]);
+
+    cpp11::external_pointer<rstandev::R_CheckUserInterrupt_Functor> interrupt_ptr(new rstandev::R_CheckUserInterrupt_Functor);
+    cpp11::external_pointer<stan::callbacks::stream_logger> str_logger_ptr(new stan::callbacks::stream_logger(std::cout, std::cout, std::cout, std::cerr, std::cerr));
+
+    cpp11::external_pointer<stan::callbacks::writer> init_writer_ptr(new stan::callbacks::writer);
+
+    std::string output = cpp11::as_cpp<std::string>(args["output"]);
+      auto output_filename = output + "_1.csv";
+      auto unique_fstream
+          = std::make_unique<std::fstream>(output_filename, std::fstream::out);
+
+    cpp11::external_pointer<stan::callbacks::unique_stream_writer<std::ostream>>
+    sample_writers(new stan::callbacks::unique_stream_writer<std::ostream>(std::move(unique_fstream), "# "));
+
+    cpp11::external_pointer<stan::callbacks::unique_stream_writer<std::ostream>>
+    diagnostic_writers(new stan::callbacks::unique_stream_writer<std::ostream>(nullptr, "# "));
+
+    std::string rdump_init = cpp11::as_cpp<std::string>(args["rdump_init"]);
+
+    cpp11::external_pointer<std::shared_ptr<stan::io::var_context>> init_contexts(
+      new std::shared_ptr<stan::io::var_context>(var_context(rdump_init))
+    );
+
+    return std::make_tuple(
+      init_contexts,
       interrupt_ptr,
       str_logger_ptr,
       init_writer_ptr,

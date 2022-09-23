@@ -13,53 +13,81 @@
 #include <memory>
 
 namespace rstandev {
-  template <typename F,
-            stan::require_same_t<F, NutsDenseAdaptT>* = nullptr>
-  auto prepare_args(const cpp11::list& args_list) {
-    using ArgTypesTuple = std::tuple<
-      cpp11::external_pointer<stan_model>, size_t,
-      cpp11::external_pointer<std::vector<std::shared_ptr<stan::io::var_context>>>,
-      size_t, int, double, int, int, int, bool, int, double, double, int, double,
-      double, double, double, size_t, size_t, size_t,
-      cpp11::external_pointer<R_CheckUserInterrupt_Functor>,
-      cpp11::external_pointer<stan::callbacks::stream_logger>,
-      cpp11::external_pointer<std::vector<stan::callbacks::writer>>,
-      cpp11::external_pointer<std::vector<stan::callbacks::unique_stream_writer<std::ostream>>>,
-      cpp11::external_pointer<std::vector<stan::callbacks::unique_stream_writer<std::ostream>>>
-    >;
-    static const char* ArgNames[26] = {
-      "model_ptr", "num_chains", "init_contexts", "random_seed", "id", "init_radius",
-      "num_warmup", "num_samples", "num_thin", "save_warmup", "refresh",
-      "stepsize", "stepsize_jitter", "max_depth", "delta", "gamma", "kappa",
-      "t0", "init_buffer", "term_buffer", "window", "interrupt_ptr",
-      "str_logger_ptr", "init_writer_ptr", "samp_writer_ptr", "diag_writer_ptr"
-    };
-    return extract_args<ArgTypesTuple>(args_list, ArgNames);
-  }
+  template <typename T>
+  class StanArg {
+    public:
+      T dummy;
+      std::string arg_name;
 
-    template <typename F,
-            stan::require_same_t<F, NutsDenseT>* = nullptr>
-  auto prepare_args(const cpp11::list& args_list) {
-    return std::forward_as_tuple(
-      *cpp11::external_pointer<stan_model>(args_list["model_ptr"]).get(),
-      *((*cpp11::external_pointer<std::vector<std::shared_ptr<stan::io::var_context>>>(args_list["init_contexts"]))[0]),
-      cpp11::as_cpp<size_t>(args_list["random_seed"]),
-      cpp11::as_cpp<int>(args_list["id"]),
-      cpp11::as_cpp<double>(args_list["init_radius"]),
-      cpp11::as_cpp<int>(args_list["num_warmup"]),
-      cpp11::as_cpp<int>(args_list["num_samples"]),
-      cpp11::as_cpp<int>(args_list["num_thin"]),
-      cpp11::as_cpp<bool>(args_list["save_warmup"]),
-      cpp11::as_cpp<int>(args_list["refresh"]),
-      cpp11::as_cpp<double>(args_list["stepsize"]),
-      cpp11::as_cpp<double>(args_list["stepsize_jitter"]),
-      cpp11::as_cpp<int>(args_list["max_depth"]),
-      *cpp11::external_pointer<R_CheckUserInterrupt_Functor>(args_list["interrupt_ptr"]),
-      *cpp11::external_pointer<stan::callbacks::stream_logger>(args_list["str_logger_ptr"]),
-      (*cpp11::external_pointer<std::vector<stan::callbacks::writer>>(args_list["init_writer_ptr"]))[0],
-      (*cpp11::external_pointer<std::vector<stan::callbacks::unique_stream_writer<std::ostream>>>(args_list["samp_writer_ptr"]))[0],
-      (*cpp11::external_pointer<std::vector<stan::callbacks::unique_stream_writer<std::ostream>>>(args_list["diag_writer_ptr"]))[0]);
-  }
+      StanArg(std::string name) {
+        arg_name = name;
+      }
+  };
+
+  template <typename F, typename Enable = void>
+  class StanArgsLookup {};
+
+  template <typename F>
+  class StanArgsLookup<F, stan::require_same_t<F, NutsDenseAdaptT>>  {
+    public:
+      inline static auto args() {
+        return std::forward_as_tuple(
+          StanArg<cpp11::external_pointer<stan_model>>("model_ptr"),
+          StanArg<size_t>("num_chains"),
+          StanArg<cpp11::external_pointer<std::vector<std::shared_ptr<stan::io::var_context>>>>("init_contexts"),
+          StanArg<size_t>("random_seed"),
+          StanArg<int>("id"),
+          StanArg<double>("init_radius"),
+          StanArg<int>("num_warmup"),
+          StanArg<int>("num_samples"),
+          StanArg<int>("num_thin"),
+          StanArg<bool>("save_warmup"),
+          StanArg<int>("refresh"),
+          StanArg<double>("stepsize"),
+          StanArg<double>("stepsize_jitter"),
+          StanArg<int>("max_depth"),
+          StanArg<double>("delta"),
+          StanArg<double>("gamma"),
+          StanArg<double>("kappa"),
+          StanArg<double>("t0"),
+          StanArg<size_t>("init_buffer"),
+          StanArg<size_t>("term_buffer"),
+          StanArg<size_t>("window"),
+          StanArg<cpp11::external_pointer<R_CheckUserInterrupt_Functor>>("interrupt_ptr"),
+          StanArg<cpp11::external_pointer<stan::callbacks::stream_logger>>("str_logger_ptr"),
+          StanArg<cpp11::external_pointer<std::vector<stan::callbacks::writer>>>("init_writer_ptr"),
+          StanArg<cpp11::external_pointer<std::vector<stan::callbacks::unique_stream_writer<std::ostream>>>>("samp_writer_ptr"),
+          StanArg<cpp11::external_pointer<std::vector<stan::callbacks::unique_stream_writer<std::ostream>>>>("diag_writer_ptr")
+        );
+      }
+  };
+
+  template <typename F>
+  class StanArgsLookup<F, stan::require_same_t<F, NutsDenseT>>  {
+    public:
+      inline static auto args() {
+        return std::forward_as_tuple(
+          StanArg<cpp11::external_pointer<stan_model>>("model_ptr"),
+          StanArg<cpp11::external_pointer<std::shared_ptr<stan::io::var_context>>>("init_contexts"),
+          StanArg<size_t>("random_seed"),
+          StanArg<int>("id"),
+          StanArg<double>("init_radius"),
+          StanArg<int>("num_warmup"),
+          StanArg<int>("num_samples"),
+          StanArg<int>("num_thin"),
+          StanArg<bool>("save_warmup"),
+          StanArg<int>("refresh"),
+          StanArg<double>("stepsize"),
+          StanArg<double>("stepsize_jitter"),
+          StanArg<int>("max_depth"),
+          StanArg<cpp11::external_pointer<R_CheckUserInterrupt_Functor>>("interrupt_ptr"),
+          StanArg<cpp11::external_pointer<stan::callbacks::stream_logger>>("str_logger_ptr"),
+          StanArg<cpp11::external_pointer<stan::callbacks::writer>>("init_writer_ptr"),
+          StanArg<cpp11::external_pointer<stan::callbacks::unique_stream_writer<std::ostream>>>("samp_writer_ptr"),
+          StanArg<cpp11::external_pointer<stan::callbacks::unique_stream_writer<std::ostream>>>("diag_writer_ptr")
+        );
+      }
+  };
 }
 
 #endif
