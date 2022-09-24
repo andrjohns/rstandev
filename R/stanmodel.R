@@ -80,18 +80,12 @@ stanmodel <- R6::R6Class(
                 call. = FALSE)
         self$initialize(model_code = self$model_code)
       } else {
-        private$env <- new.env()
         dir <- file.path(tempdir(), "cpp11_env_refresh")
-        if (dir.exists(dir)) {
-          unlink(dir, recursive = TRUE)
-        }
-        dir.create(file.path(dir, "R"), recursive = TRUE)
-        dir.create(file.path(dir, "src"), recursive = TRUE)
-        cat(private$cpp11_export_def, file = file.path(dir, "R", "cpp11.R"))
-        libpath <- file.path(dir, "src", paste0(private$dynlib_basename, private$dynlib_ext))
-        readr::write_file(x = private$dynlib_bytes, file = libpath)
+        private$write_source(dir = dir)
 
+        private$env <- new.env()
         source(file.path(dir, "R", "cpp11.R"), local = private$env)
+        libpath <- file.path(dir, "src", paste0(private$dynlib_basename, private$dynlib_ext))
         dyn.load(libpath, local = TRUE, now = TRUE)
       }
     },
@@ -118,22 +112,6 @@ stanmodel <- R6::R6Class(
         })
         invisible(NULL)
       }
-    },
-    sample = function(data_list, init_list, ...) {
-      args <- sample_defaults()
-
-      user_args <- list(...)
-      if (length(user_args) > 0) {
-        arg_names <- names(user_args)
-        args[arg_names] <- user_args[arg_names]
-      }
-      args$model_ptr <- private$env$new_model(stan_rdump(data_list),
-                                            args$random_seed)
-      args$rdump_init <- stan_rdump(init_list)
-      private$env$stan_methods_wrapper("hmc_nuts_dense_e_adapt", args)
-
-      outputs <- paste0(args$output, "_", 0:(args$num_chains - 1), ".csv")
-      stanfit$new(self, private, outputs, args$model_ptr)
     }
   ),
   private = list(
@@ -142,9 +120,22 @@ stanmodel <- R6::R6Class(
     dynlib_basename = NULL,
     dynlib_ext = NULL,
     dynlib_bytes = NULL,
-    cpp11_export_def = NULL
+    cpp11_export_def = NULL,
+    write_source = function(dir) {
+      if (dir.exists(dir)) {
+        unlink(dir, recursive = TRUE)
+      }
+      dir.create(file.path(dir, "R"), recursive = TRUE)
+      dir.create(file.path(dir, "src"), recursive = TRUE)
+      cat(private$cpp11_export_def, file = file.path(dir, "R", "cpp11.R"))
+      libpath <- file.path(dir, "src", paste0(private$dynlib_basename, private$dynlib_ext))
+      readr::write_file(x = private$dynlib_bytes, file = libpath)
+    }
   )
 )
+
+stanmodel$set("public", name = "sample", value = sample)
+
 
 #' @export
 stan_model <- function(model_path = NULL, model_code = NULL,
@@ -155,3 +146,4 @@ stan_model <- function(model_path = NULL, model_code = NULL,
   st$compile(...)
   return(stn)
 }
+

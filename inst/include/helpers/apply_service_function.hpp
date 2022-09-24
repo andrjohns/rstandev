@@ -1,8 +1,8 @@
 #ifndef RSTANDEV_HELPERS_APPLY_SERVICE_FUNCTION_HPP
 #define RSTANDEV_HELPERS_APPLY_SERVICE_FUNCTION_HPP
 
-#include <helpers/prepare_args.hpp>
-#include <helpers/method_typedefs.hpp>
+#include <services/hmc_nuts.hpp>
+#include <helpers/extract_args.hpp>
 #include <helpers/init_services.hpp>
 #include <unordered_map>
 
@@ -20,7 +20,8 @@ namespace rstandev {
 
     return stan::math::apply(
       services_fun<F>(),
-      std::forward<decltype(extract_args(StanArgsLookup<F>::args(), args))>(extract_args(StanArgsLookup<F>::args(), args)));
+      extract_args(arg_types<F>(), args)
+    );
   }
 }
 

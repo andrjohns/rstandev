@@ -22,7 +22,6 @@ namespace rstandev {
     for (int i = 1; i < num_chains; ++i) {
       init_contexts->push_back(var_context(rdump_init));
     }
-
     return init_contexts;
   }
 }
