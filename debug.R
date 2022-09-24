@@ -7,7 +7,7 @@ sf <- st$sample(
   metric = "dense_e",
   num_threads = 8,
   adapt = FALSE,
-  num_chains = 1,
+  num_chains = 4,
   output_dir = "tmp")
 
 
