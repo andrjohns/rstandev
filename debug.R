@@ -12,3 +12,4 @@ sf <- st$sample(
 
 
 num_cores <- min(8,4)
+

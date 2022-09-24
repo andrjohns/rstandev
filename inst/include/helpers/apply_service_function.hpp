@@ -42,14 +42,15 @@ namespace rstandev {
     args.push_back({cpp11::named_arg("interrupt_ptr") = interrupt_ptr});
     args.push_back({cpp11::named_arg("str_logger_ptr") = str_logger_ptr});
     cpp11::list args_copy = args;
+
     int res = 0;
 
     for (size_t i = 0; i < num_chains; ++i) {
       cpp11::writable::list iter_args = args_copy;
 
-      iter_args.push_back({cpp11::named_arg("init_writer_ptr") = make_init_writer<F>(i)});
-      iter_args.push_back({cpp11::named_arg("samp_writer_ptr") = make_sample_writer<F>(i, output_dir)});
-      iter_args.push_back({cpp11::named_arg("diag_writer_ptr") = make_diag_writer<F>(i)});
+      iter_args.push_back({cpp11::named_arg("init_writer_ptr") = make_init_writer<F>(num_chains)});
+      iter_args.push_back({cpp11::named_arg("samp_writer_ptr") = make_sample_writer<F>(num_chains, output_dir)});
+      iter_args.push_back({cpp11::named_arg("diag_writer_ptr") = make_diag_writer<F>(num_chains)});
 
       res = stan::math::apply(
         services_fun<F>(),
