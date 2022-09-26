@@ -20,24 +20,21 @@ stanfit <- R6::R6Class("stanfit",
       private$model_ptr <- model_ptr
     },
     summary = function() {
-      if (!is.null(self$summary_table)) {
-        return(self$summary_table)
-      } else {
+      if (is.null(self$summary_table)) {
         self$summary_table <- posterior::summarise_draws(self$draws)
         return(self$summary_table)
       }
+      self$summary_table
     },
     loo = function(parameter = "log_lik", cores = getOption("mc.cores", 1)) {
-      if (!is.null(self$loo_results)) {
-        return(self$loo_results)
-      } else {
+      if (is.null(self$loo_results)) {
         LLarray <- suppressWarnings(as.matrix(self$draws[,grep(parameter, colnames(self$draws))]))
         r_eff <- loo::relative_eff(x = exp(LLarray), cores = cores,
                                     chain_id=self$draws$.chain)
         self$loo_results = loo::loo(LLarray, r_eff = r_eff, cores = cores,
                                     save_psis = TRUE)
-        return(self$loo_results)
       }
+      self$loo_results
     }
   ),
   private = list(
