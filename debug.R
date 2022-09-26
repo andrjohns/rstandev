@@ -8,11 +8,7 @@ sf <- st$sample(
   metric = "diag_e",
   num_threads = 8,
   adapt = TRUE,
-  num_chains = 4,
-  output_dir = "tmp",
-  num_samples = 40000,
-  num_warmup = 40000,
-  refresh=10000)
+  num_chains = 4)
 Sys.time() -a
 
 num_cores <- min(8,4)
