@@ -57,10 +57,8 @@ namespace rstandev {
   template <typename F, stan::require_t<is_multi_chain<F>>* = nullptr>
   inline static auto arg_types() {
     return std::forward_as_tuple(
-      StanArg<cpp11::external_pointer<stan_model>>("model_ptr"),
-      StanArg<cpp11::external_pointer<std::shared_ptr<stan::io::var_context>>>("init_contexts"),
       StanArg<size_t>("random_seed"),
-      StanArg<int>("chain_id"),
+      StanArg<int>("id"),
       StanArg<double>("init_radius"),
       StanArg<int>("num_warmup"),
       StanArg<int>("num_samples"),
@@ -76,22 +74,15 @@ namespace rstandev {
       StanArg<double>("t0"),
       StanArg<size_t>("init_buffer"),
       StanArg<size_t>("term_buffer"),
-      StanArg<size_t>("window"),
-      StanArg<cpp11::external_pointer<R_CheckUserInterrupt_Functor>>("interrupt_ptr"),
-      StanArg<cpp11::external_pointer<stan::callbacks::stream_logger>>("str_logger_ptr"),
-      StanArg<cpp11::external_pointer<stan::callbacks::writer>>("init_writer_ptr"),
-      StanArg<cpp11::external_pointer<stan::callbacks::unique_stream_writer<std::ostream>>>("samp_writer_ptr"),
-      StanArg<cpp11::external_pointer<stan::callbacks::unique_stream_writer<std::ostream>>>("diag_writer_ptr")
+      StanArg<size_t>("window")
     );
   }
 
   template <typename F, stan::require_not_t<is_multi_chain<F>>* = nullptr>
   inline static auto arg_types() {
     return std::forward_as_tuple(
-      StanArg<cpp11::external_pointer<stan_model>>("model_ptr"),
-      StanArg<cpp11::external_pointer<std::shared_ptr<stan::io::var_context>>>("init_contexts"),
       StanArg<size_t>("random_seed"),
-      StanArg<int>("chain_id"),
+      StanArg<int>("id"),
       StanArg<double>("init_radius"),
       StanArg<int>("num_warmup"),
       StanArg<int>("num_samples"),
@@ -100,12 +91,7 @@ namespace rstandev {
       StanArg<int>("refresh"),
       StanArg<double>("stepsize"),
       StanArg<double>("stepsize_jitter"),
-      StanArg<int>("max_depth"),
-      StanArg<cpp11::external_pointer<R_CheckUserInterrupt_Functor>>("interrupt_ptr"),
-      StanArg<cpp11::external_pointer<stan::callbacks::stream_logger>>("str_logger_ptr"),
-      StanArg<cpp11::external_pointer<stan::callbacks::writer>>("init_writer_ptr"),
-      StanArg<cpp11::external_pointer<stan::callbacks::unique_stream_writer<std::ostream>>>("samp_writer_ptr"),
-      StanArg<cpp11::external_pointer<stan::callbacks::unique_stream_writer<std::ostream>>>("diag_writer_ptr")
+      StanArg<int>("max_depth")
     );
   }
 
