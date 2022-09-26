@@ -16,6 +16,6 @@ generate_cpp <- function(hpp_code, standalone_funs = FALSE) {
   }
   dir.create(dir, recursive = TRUE)
   file <- tempfile(tmpdir = dir, fileext = ".cpp")
-  brio::write_lines(cpp_code, file)
+  cat(cpp_code, file = file, sep = "\n")
   list(dir = dir, file = file)
 }

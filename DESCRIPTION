@@ -19,11 +19,9 @@ Imports:
     RcppEigen,
     BH,
     sundialr,
-    brio,
     R6,
     V8,
     rlang,
-    future,
-    furrr
+    loo
 URL: https://github.com/andrjohns/rstan.dev
 BugReports: https://github.com/andrjohns/rstan.dev/issues
