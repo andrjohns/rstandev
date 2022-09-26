@@ -33,18 +33,26 @@ stanmodel <- R6::R6Class(
       private$dynlib_bytes <- readr::read_file_raw(dynlib_path)
       private$cpp11_export_def <- readr::read_file(file.path(cpp_locations$dir, "R", "cpp11.R"))
     },
-    log_prob = function(data_list, upars) {
+    log_prob = function(data_list = NULL, upars) {
       args <- list(
-        rdump_string = stan_rdump(data_list),
         upars = upars
       )
+      if (!is.null(data_list)) {
+        args$rdump_data <- stan_rdump(data_list)
+      } else if (!is.null(private$model_ptr)) {
+        args$model_ptr <- private$model_ptr
+      }
       private$env$log_prob(args)
     },
-    grad_log_prob = function(data_list, upars) {
+    grad_log_prob = function(data_list = NULL, upars) {
       args <- list(
-        rdump_string = stan_rdump(data_list),
         upars = upars
       )
+      if (!is.null(data_list)) {
+        args$rdump_data <- stan_rdump(data_list)
+      } else if (!is.null(private$model_ptr)) {
+        args$model_ptr <- private$model_ptr
+      }
       private$env$grad_log_prob(args)
     },
     get_param_names = function(data_list) {

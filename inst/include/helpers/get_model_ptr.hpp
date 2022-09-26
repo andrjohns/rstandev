@@ -13,7 +13,7 @@ namespace rstandev {
     if (args_list["model_ptr"] != R_NilValue) {
       return cpp11::external_pointer<StanModelT>(args_list["model_ptr"]);
     } else {
-      std::string rdump_string = cpp11::as_cpp<std::string>(args_list["rdump_string"]);
+      std::string rdump_string = cpp11::as_cpp<std::string>(args_list["rdump_data"]);
       return cpp11::external_pointer<StanModelT>(new_model<StanModelT>(rdump_string));
     }
   }

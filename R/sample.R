@@ -45,6 +45,7 @@ sample <- function(
   input_args$id <- 1
 
   private$env$stan_methods_wrapper(service_name, input_args)
-  outputs <- paste0(input_args$output_dir, "/output", "_", 0:(num_chains - 1), ".csv")
-  stanfit$new(self, private, outputs, input_args$model_ptr)
+  model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
+  outputs <- paste0(input_args$output_dir, "/output", "_", 1:(num_chains), ".csv")
+  stanfit$new(self, private, outputs, model_ptr)
 }

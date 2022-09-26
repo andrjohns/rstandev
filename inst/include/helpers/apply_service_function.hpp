@@ -121,6 +121,7 @@ stan::model::model_base &new_model(stan::io::var_context &data_context,
       },
       tbb::simple_partitioner());
       return 1;
+
   }
 }
 
