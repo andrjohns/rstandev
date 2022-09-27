@@ -6,6 +6,8 @@ sf <- st$sample(
   data = list(N=2,y=0:1),
   init = list(theta = 0.1),
   metric = "dense_e",
+  engine = "static",
+  algorithm = "fixed_param",
   inv_metric=diag(1),
   num_threads = 8,
   adapt = TRUE,

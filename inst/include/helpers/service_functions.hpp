@@ -16,6 +16,7 @@
 #include <stan/services/sample/hmc_static_dense_e.hpp>
 #include <stan/services/sample/hmc_static_diag_e.hpp>
 #include <stan/services/sample/hmc_static_unit_e.hpp>
+#include <stan/services/sample/fixed_param.hpp>
 
 #define SERVICE_FUN_DECL(FUN_NAME, TYPE_NAME) \
   auto FUN_NAME = [](auto&&... args) { return stan::services::sample::FUN_NAME(args...); }; \
@@ -37,6 +38,7 @@ namespace rstandev {
   SERVICE_FUN_DECL(hmc_static_dense_e, StaticDenseT);
   SERVICE_FUN_DECL(hmc_static_diag_e, StaticDiagT);
   SERVICE_FUN_DECL(hmc_static_unit_e, StaticUnitT);
+  SERVICE_FUN_DECL(fixed_param, FixedParamT);
 
   template <typename T>
   using is_multi_chain = stan::math::disjunction<
@@ -78,6 +80,12 @@ namespace rstandev {
     std::is_same<T, StaticUnitAdaptT>
   >;
 
+  template <typename T>
+  using needs_inv_metric = stan::math::conjunction<
+    boost::negation<is_unit<T>>,
+    boost::negation<std::is_same<T, FixedParamT>>
+  >;
+
   template <typename F, stan::require_any_same_t<F, NutsUnitAdaptT, StaticUnitAdaptT>* = nullptr>
   inline static auto arg_types() {
     return std::forward_as_tuple(
@@ -96,6 +104,18 @@ namespace rstandev {
       StanArg<double>("gamma"),
       StanArg<double>("kappa"),
       StanArg<double>("t0")
+    );
+  }
+
+  template <typename F, stan::require_all_same_t<F, FixedParamT>* = nullptr>
+  inline static auto arg_types() {
+    return std::forward_as_tuple(
+      StanArg<size_t>("random_seed"),
+      StanArg<int>("id"),
+      StanArg<double>("init_radius"),
+      StanArg<int>("num_samples"),
+      StanArg<int>("num_thin"),
+      StanArg<int>("refresh")
     );
   }
 
@@ -124,7 +144,8 @@ namespace rstandev {
     );
   }
 
-  template <typename F, stan::require_not_t<is_adapt<F>>* = nullptr>
+  template <typename F, stan::require_not_t<is_adapt<F>>* = nullptr,
+            stan::require_all_not_same_t<F, FixedParamT>* = nullptr>
   inline static auto arg_types() {
     return std::forward_as_tuple(
       StanArg<size_t>("random_seed"),

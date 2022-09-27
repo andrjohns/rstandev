@@ -1,12 +1,13 @@
 
 sample <- function(
-  data, init,
+  data,
+  init = NULL,
   output_dir = tempdir(),
   num_chains = 4,
   num_threads = 1,
   random_seed = 0,
-  num_samples = 1000,
-  num_warmup = 1000,
+  num_samples = 2000,
+  num_warmup = 2000,
   save_warmup = FALSE,
   num_thin = 1,
   adapt = TRUE,
@@ -25,7 +26,7 @@ sample <- function(
   stepsize = 1,
   stepsize_jitter = 0,
   init_radius = 2,
-  refresh = 10
+  refresh = 200
   ) {
 
   input_args <- as.list(environment())
@@ -34,13 +35,13 @@ sample <- function(
 
   if (algorithm != "fixed_param") {
     service_name <- paste0(c(service_name, engine, metric), collapse = "_")
+    if (adapt) {
+      service_name <- paste0(c(service_name, "adapt"), collapse = "_")
+    }
   }
-
-  if (adapt) {
-    service_name <- paste0(c(service_name, "adapt"), collapse = "_")
+  if (!is.null(init)) {
+    input_args$rdump_init <- stan_rdump(init)
   }
-
-  input_args$rdump_init <- stan_rdump(init)
   input_args$rdump_data <- stan_rdump(data)
   input_args$id <- 1
   if (!is.null(inv_metric)) {

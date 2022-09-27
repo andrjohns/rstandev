@@ -26,13 +26,13 @@ namespace internal {
   }
 
   template <typename ServiceFunT, typename ModelT, typename InitContextsT, typename InvMetricsT,
-            stan::require_t<is_unit<ServiceFunT>>* = nullptr>
+            stan::require_not_t<needs_inv_metric<ServiceFunT>>* = nullptr>
   decltype(auto) get_args_head(ModelT&& model, InitContextsT&& init_contexts, InvMetricsT&& inv_metrics) {
     return std::forward_as_tuple(model, init_contexts);
   }
 
   template <typename ServiceFunT, typename ModelT, typename InitContextsT, typename InvMetricsT,
-            stan::require_not_t<is_unit<ServiceFunT>>* = nullptr>
+            stan::require_t<needs_inv_metric<ServiceFunT>>* = nullptr>
   decltype(auto) get_args_head(ModelT&& model, InitContextsT&& init_contexts, InvMetricsT&& inv_metrics) {
     return std::forward_as_tuple(model, init_contexts, inv_metrics);
   }
