@@ -142,9 +142,146 @@ stanmodel <- R6::R6Class(
   )
 )
 
+
+sample <- function(
+  data,
+  init = NULL,
+  output_dir = tempdir(),
+  num_chains = 4,
+  num_threads = 1,
+  random_seed = 0,
+  num_samples = 2000,
+  num_warmup = 2000,
+  save_warmup = FALSE,
+  num_thin = 1,
+  adapt = TRUE,
+  gamma = 0.05,
+  delta = 0.8,
+  kappa = 0.75,
+  t0 = 10,
+  init_buffer = 75,
+  term_buffer = 50,
+  window = 25,
+  algorithm = "hmc",
+  engine = "nuts",
+  max_depth = 10,
+  metric = "diag_e",
+  inv_metric = NULL,
+  stepsize = 1,
+  stepsize_jitter = 0,
+  init_radius = 2,
+  refresh = 200
+  ) {
+
+  input_args <- as.list(environment())
+
+  service_name <- algorithm
+
+  if (algorithm != "fixed_param") {
+    service_name <- paste0(c(service_name, engine, metric), collapse = "_")
+    if (adapt) {
+      service_name <- paste0(c(service_name, "adapt"), collapse = "_")
+    }
+  }
+  if (!is.null(init)) {
+    input_args$rdump_init <- stan_rdump(init)
+  }
+  input_args$rdump_data <- stan_rdump(data)
+  input_args$id <- 1
+  if (!is.null(inv_metric)) {
+    if (metric == "diag_e") {
+      input_args$inv_metric <- paste0(
+        "inv_metric <- c(",
+        paste(diag(inv_metric), collapse = ","), ")"
+      )
+    } else {
+      input_args$inv_metric <- stan_rdump(list(inv_metric=inv_metric))
+    }
+  }
+
+  private$env$stan_methods_wrapper(service_name, input_args)
+  model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
+  outputs <- paste0(input_args$output_dir, "/output", "_", 1:(num_chains), ".csv")
+  stanfit$new(self, private, outputs, model_ptr)
+}
+
+
+optimize <- function(
+  data,
+  init = NULL,
+  algorithm = "BFGS",
+  output_dir = tempdir(),
+  num_chains = 4,
+  num_threads = 1,
+  random_seed = 0,
+  num_iterations = 2000,
+  save_iterations = TRUE,
+  init_radius = 2,
+  refresh = 200,
+  history_size = 5,
+  init_alpha = 0.001,
+  tol_obj = 0.000000000001,
+  tol_rel_obj = 10000.0,
+  tol_grad = 10000000.0,
+  tol_rel_grad = 10000000.0,
+  tol_param = 0.00000001
+  ) {
+
+  input_args <- as.list(environment())
+
+  service_name <- tolower(algorithm)
+
+  if (!is.null(init)) {
+    input_args$rdump_init <- stan_rdump(init)
+  }
+  input_args$rdump_data <- stan_rdump(data)
+  input_args$id <- 1
+
+  private$env$stan_methods_wrapper(service_name, input_args)
+  model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
+  outputs <- paste0(input_args$output_dir, "/output", "_", 1:(num_chains), ".csv")
+  stanfit$new(self, private, outputs, model_ptr)
+}
+
+variational <- function(
+  data,
+  init = NULL,
+  algorithm = "meanfield",
+  output_dir = tempdir(),
+  num_chains = 4,
+  num_threads = 1,
+  random_seed = 0,
+  max_iterations = 10000,
+  init_radius = 2,
+  grad_samples = 1,
+  elbo_samples = 100,
+  tol_rel_obj = 0.01,
+  eta = 1.0,
+  adapt_engaged = TRUE,
+  adapt_iterations = 50,
+  eval_elbo = 100,
+  output_samples = 1000
+  ) {
+
+  input_args <- as.list(environment())
+
+  service_name <- tolower(algorithm)
+
+  if (!is.null(init)) {
+    input_args$rdump_init <- stan_rdump(init)
+  }
+  input_args$rdump_data <- stan_rdump(data)
+  input_args$id <- 1
+
+  private$env$stan_methods_wrapper(service_name, input_args)
+  model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
+  outputs <- paste0(input_args$output_dir, "/output", "_", 1:(num_chains), ".csv")
+  stanfit$new(self, private, outputs, model_ptr)
+}
+
 stanmodel$set("public", name = "sample", value = sample)
 stanmodel$set("public", name = "optimize", value = optimize)
-
+stanmodel$set("public", name = "variational", value = variational)
 
 #' @export
 stan_model <- function(model_path = NULL, model_code = NULL,

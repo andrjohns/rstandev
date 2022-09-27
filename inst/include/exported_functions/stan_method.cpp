@@ -21,7 +21,10 @@ int stan_methods_wrapper(std::string name, cpp11::list args) {
 
     {"bfgs", rstandev::apply_service_function<rstandev::BFGST>},
     {"lbfgs", rstandev::apply_service_function<rstandev::LBFGST>},
-    {"newton", rstandev::apply_service_function<rstandev::NewtonT>}
+    {"newton", rstandev::apply_service_function<rstandev::NewtonT>},
+
+    {"fullrank", rstandev::apply_service_function<rstandev::FullRankT>},
+    {"meanfield", rstandev::apply_service_function<rstandev::MeanFieldT>}
 
   };
   tbb::global_control c(tbb::global_control::max_allowed_parallelism, cpp11::as_cpp<size_t>(args["num_threads"]));

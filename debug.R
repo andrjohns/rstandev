@@ -18,7 +18,14 @@ sf <- st$sample(
 
 sf <- st$optimize(
   data = list(N=2,y=0:1),
-  algorithm = "LBFGS")
+  algorithm = "Newton",
+  num_chains = 4,
+  num_threads = 4)
+sf <- st$variational(
+  data = list(N=2,y=0:1),
+  algorithm = "meanfield",
+  num_chains = 4,
+  num_threads = 1)
 Sys.time() -a
 
 num_cores <- min(8,4)
