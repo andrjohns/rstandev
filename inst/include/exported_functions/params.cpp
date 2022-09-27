@@ -56,7 +56,7 @@ cpp11::doubles constrain_pars(cpp11::list args_list) {
   std::vector<double> vars;
   boost::ecuyer1988 base_rng(static_cast<boost::uint32_t>(std::time(0)));
 
-  ptr->write_array(base_rng, params_r, params_i, vars);
+  ptr->write_array(base_rng, params_r, params_i, vars, false, false);
   cpp11::writable::doubles ret = std::move(vars);
   return ret;
 }

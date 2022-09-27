@@ -18,7 +18,83 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-An experimental, header-only interface to Stan
+An experimental, header-only interface to Stan in R
+
+## Usage
+
+Initialise and compile a new stanmodel object:
+
+```{r}
+library(rstan.dev)
+
+model = "
+functions {
+  row_vector rtn_rowvec(row_vector x) {
+    return x;
+  }
+}
+
+data {
+  int<lower=0> N;
+  array[N] int<lower=0,upper=1> y; // or int<lower=0,upper=1> y[N];
+}
+parameters {
+  real<lower=0,upper=1> theta;
+}
+model {
+  theta ~ beta(1,1);  // uniform prior on interval 0,1
+  y ~ bernoulli(theta);
+}
+
+generated quantities {
+  vector[N] log_lik;
+  for (n in 1:N) {
+    log_lik[n] = bernoulli_lpmf(y[n] | theta);
+  }
+}
+"
+
+stmod <- stanmodel$new(model_code = model)
+stmod$compile()
+```
+
+The compiled `stanmodel` object can then call `log_prob` and `grad_log_prob` as long as data is also passed:
+```{r}
+stmod$log_prob(list(N=2, y=0:1), upars = 0.1)
+stmod$grad_log_prob(list(N=2, y=0:1), upars = 0.1)
+```
+
+As well as `constrain_` and `unconstrain_pars`:
+```{r}
+stmod$constrain_pars(list(N=2, y=0:1), upars = 2.5)
+stmod$unconstrain_pars(list(N=2, y=0:1), list(theta = 0.1))
+```
+
+Any model functions can be exposed using the `expose_functions()` member. By default, these functions will be added as members to the source `stanmodel` object, but they can be exported to the global environment using the `global = TRUE` flag:
+
+```{r}
+stmod$expose_functions()
+stmod$rtn_rowvec(c(1, 2, 3))
+```
+
+Sampling can then be performed using the `sample()` member:
+```{r}
+samp <- stmod$sample(
+  data = list(N=2, y=0:1),
+  num_chains = 4,
+  num_threads = 8, refresh = 1000)
+```
+Similarly for `optimize()` and `variational()` members.
+
+The generated `stanfit` object can then be summarised with the `summary()` function:
+```{r}
+samp$summary()
+```
+
+And the ELPD-LOO calculated with the `loo()` member:
+```{r}
+samp$loo()
+```
 
 ## Installation
 
@@ -26,5 +102,6 @@ You can install the development version of rstan.dev from [GitHub](https://githu
 
 ``` r
 # install.packages("devtools")
+devtools::install_github("andrjohns/sundialr")
 devtools::install_github("andrjohns/rstan.dev")
 ```

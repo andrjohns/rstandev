@@ -1,4 +1,4 @@
-compile_cpp <- function(cpp_locations, env, return_env = TRUE) {
+compile_cpp <- function(cpp_locations, env, quiet = TRUE, return_env = TRUE) {
   cpp11env <- rlang::ns_env("cpp11")
   dir <- cpp_locations$dir
   file <- basename(cpp_locations$file)
@@ -42,7 +42,7 @@ compile_cpp <- function(cpp_locations, env, return_env = TRUE) {
 
   source_files <- normalizePath(c(cpp_path, cpp11_path), winslash = "/")
 
-  res <- callr::rcmd("SHLIB", source_files, user_profile = TRUE, show = TRUE, wd = src_dir)
+  res <- callr::rcmd("SHLIB", source_files, user_profile = TRUE, show = !quiet, wd = src_dir)
   r_functions <- cpp11env$generate_r_functions(funs, package = name, use_package = TRUE)
   cat(r_functions, file = file.path(r_dir, "cpp11.R"))
   source(file.path(r_dir, "cpp11.R"), local = env)

@@ -17,10 +17,11 @@ stanmodel <- R6::R6Class(
     compile = function(standalone_functions = FALSE,
                   use_opencl = FALSE, optim_level = 0,
                   allow_undefined = FALSE, warn_pedantic = FALSE,
-                  warn_uninitialized = FALSE, external_cpp = NULL) {
+                  warn_uninitialized = FALSE, external_cpp = NULL,
+                  quiet = TRUE) {
       self$hpp_code <- stanc(self$model_code, allow_undefined = allow_undefined, external_cpp = external_cpp)
       cpp_locations <- generate_cpp(self$hpp_code)
-      private$env <- compile_cpp(cpp_locations, new.env())
+      private$env <- compile_cpp(cpp_locations, env = new.env(), quiet = quiet, return_env = TRUE)
 
       cpp_files <- list.files(file.path(cpp_locations$dir, "src"), pattern = ".cpp")
       base_cpp <- grep("cpp11", cpp_files, invert = TRUE, value = TRUE)
@@ -69,14 +70,14 @@ stanmodel <- R6::R6Class(
     },
     unconstrain_pars = function(data_list, init_list) {
       args <- list(
-        rdump_string = stan_rdump(data_list),
+        rdump_data = stan_rdump(data_list),
         init_string = stan_rdump(init_list)
       )
       private$env$unconstrain_pars(args)
     },
     constrain_pars = function(data_list, upars) {
       args <- list(
-        rdump_string = stan_rdump(data_list),
+        rdump_data = stan_rdump(data_list),
         upars = upars
       )
       private$env$constrain_pars(args)
@@ -97,7 +98,7 @@ stanmodel <- R6::R6Class(
         dyn.load(libpath, local = TRUE, now = TRUE)
       }
     },
-    expose_functions = function(global = FALSE) {
+    expose_functions = function(global = FALSE, quiet = TRUE) {
       model_cpp <- stanc(self$model_code, standalone_functions = TRUE)
       model_lines <- strsplit(model_cpp, "\n", fixed = TRUE)[[1]]
       funs <- grep("// [[stan::function]]", model_lines, fixed = TRUE)
@@ -111,9 +112,9 @@ stanmodel <- R6::R6Class(
       mod_stan_funs <- paste(c(model_lines[1:(funs[1] - 1)], stan_funs), collapse = "\n")
       stan_cpp_locations <- generate_cpp(mod_stan_funs, standalone_funs = TRUE)
       if (global) {
-        invisible(compile_cpp(stan_cpp_locations, globalenv(), return_env = FALSE))
+        invisible(compile_cpp(stan_cpp_locations, globalenv(), return_env = FALSE, quiet = quiet))
       } else {
-        private$standalone_env <- compile_cpp(stan_cpp_locations, new.env())
+        private$standalone_env <- compile_cpp(stan_cpp_locations, new.env(), quiet = quiet)
         purrr::walk(stan_funs, function(fun) {
           fun_name <- decor::parse_cpp_function(fun, is_attribute = TRUE)$name
           self[[fun_name]] <- private$standalone_env[[fun_name]]
