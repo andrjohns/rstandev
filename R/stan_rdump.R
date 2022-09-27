@@ -71,7 +71,7 @@ stan_rdump <- function(list) {
     if (is.matrix(vv) || is.array(vv)) {
       l2 <- c(l2, v)
       vvdim <- dim(vv)
-      dump_string <- paste(dump_string, "v <- ", sep = "\n")
+      dump_string <- paste(dump_string, v, " <- ", sep = "\n")
       if (length(vv) == 0) {
         str <- paste0("structure(integer(0), ")
       } else {

@@ -5,9 +5,10 @@ st$compile()
 sf <- st$sample(
   data = list(N=2,y=0:1),
   init = list(theta = 0.1),
-  metric = "unit_e",
+  metric = "dense_e",
+  inv_metric=diag(1),
   num_threads = 8,
-  adapt = FALSE,
+  adapt = TRUE,
   num_chains = 4,
   num_warmup=40000,
   num_samples = 40000,

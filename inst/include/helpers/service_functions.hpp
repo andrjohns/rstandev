@@ -10,6 +10,12 @@
 #include <stan/services/sample/hmc_nuts_dense_e.hpp>
 #include <stan/services/sample/hmc_nuts_diag_e.hpp>
 #include <stan/services/sample/hmc_nuts_unit_e.hpp>
+#include <stan/services/sample/hmc_static_dense_e_adapt.hpp>
+#include <stan/services/sample/hmc_static_diag_e_adapt.hpp>
+#include <stan/services/sample/hmc_static_unit_e_adapt.hpp>
+#include <stan/services/sample/hmc_static_dense_e.hpp>
+#include <stan/services/sample/hmc_static_diag_e.hpp>
+#include <stan/services/sample/hmc_static_unit_e.hpp>
 
 #define SERVICE_FUN_DECL(FUN_NAME, TYPE_NAME) \
   auto FUN_NAME = [](auto&&... args) { return stan::services::sample::FUN_NAME(args...); }; \
@@ -25,6 +31,12 @@ namespace rstandev {
   SERVICE_FUN_DECL(hmc_nuts_dense_e, NutsDenseT);
   SERVICE_FUN_DECL(hmc_nuts_diag_e, NutsDiagT);
   SERVICE_FUN_DECL(hmc_nuts_unit_e, NutsUnitT);
+  SERVICE_FUN_DECL(hmc_static_dense_e_adapt, StaticDenseAdaptT);
+  SERVICE_FUN_DECL(hmc_static_diag_e_adapt, StaticDiagAdaptT);
+  SERVICE_FUN_DECL(hmc_static_unit_e_adapt, StaticUnitAdaptT);
+  SERVICE_FUN_DECL(hmc_static_dense_e, StaticDenseT);
+  SERVICE_FUN_DECL(hmc_static_diag_e, StaticDiagT);
+  SERVICE_FUN_DECL(hmc_static_unit_e, StaticUnitT);
 
   template <typename T>
   using is_multi_chain = stan::math::disjunction<
@@ -35,29 +47,38 @@ namespace rstandev {
   template <typename T>
   using is_dense = stan::math::disjunction<
     std::is_same<T, NutsDenseAdaptT>,
-    std::is_same<T, NutsDenseT>
+    std::is_same<T, NutsDenseT>,
+    std::is_same<T, StaticDenseAdaptT>,
+    std::is_same<T, StaticDenseT>
   >;
 
   template <typename T>
   using is_diag = stan::math::disjunction<
     std::is_same<T, NutsDiagAdaptT>,
-    std::is_same<T, NutsDiagT>
+    std::is_same<T, NutsDiagT>,
+    std::is_same<T, StaticDiagAdaptT>,
+    std::is_same<T, StaticDiagT>
   >;
 
   template <typename T>
   using is_unit = stan::math::disjunction<
     std::is_same<T, NutsUnitAdaptT>,
-    std::is_same<T, NutsUnitT>
+    std::is_same<T, NutsUnitT>,
+    std::is_same<T, StaticUnitAdaptT>,
+    std::is_same<T, StaticUnitT>
   >;
 
   template <typename T>
   using is_adapt = stan::math::disjunction<
     std::is_same<T, NutsDenseAdaptT>,
     std::is_same<T, NutsDiagAdaptT>,
-    std::is_same<T, NutsUnitAdaptT>
+    std::is_same<T, NutsUnitAdaptT>,
+    std::is_same<T, StaticDenseAdaptT>,
+    std::is_same<T, StaticDiagAdaptT>,
+    std::is_same<T, StaticUnitAdaptT>
   >;
 
-  template <typename F, stan::require_all_same_t<F, NutsUnitAdaptT>* = nullptr>
+  template <typename F, stan::require_any_same_t<F, NutsUnitAdaptT, StaticUnitAdaptT>* = nullptr>
   inline static auto arg_types() {
     return std::forward_as_tuple(
       StanArg<size_t>("random_seed"),
@@ -78,7 +99,8 @@ namespace rstandev {
     );
   }
 
-  template <typename F, stan::require_t<is_multi_chain<F>>* = nullptr>
+  template <typename F, stan::require_t<is_adapt<F>>* = nullptr,
+            stan::require_all_not_same_t<F, NutsUnitAdaptT, StaticUnitAdaptT>* = nullptr>
   inline static auto arg_types() {
     return std::forward_as_tuple(
       StanArg<size_t>("random_seed"),

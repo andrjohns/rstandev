@@ -21,7 +21,7 @@ sample <- function(
   engine = "nuts",
   max_depth = 10,
   metric = "diag_e",
-  metric_file = NULL,
+  inv_metric = NULL,
   stepsize = 1,
   stepsize_jitter = 0,
   init_radius = 2,
@@ -43,6 +43,16 @@ sample <- function(
   input_args$rdump_init <- stan_rdump(init)
   input_args$rdump_data <- stan_rdump(data)
   input_args$id <- 1
+  if (!is.null(inv_metric)) {
+    if (metric == "diag_e") {
+      input_args$inv_metric <- paste0(
+        "inv_metric <- c(",
+        paste(diag(inv_metric), collapse = ","), ")"
+      )
+    } else {
+      input_args$inv_metric <- stan_rdump(list(inv_metric=inv_metric))
+    }
+  }
 
   private$env$stan_methods_wrapper(service_name, input_args)
   model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)

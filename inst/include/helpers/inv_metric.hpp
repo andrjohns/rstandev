@@ -3,6 +3,8 @@
 
 #include <stan/services/util/create_unit_e_dense_inv_metric.hpp>
 #include <stan/services/util/create_unit_e_diag_inv_metric.hpp>
+#include <stan/services/util/read_dense_inv_metric.hpp>
+#include <stan/services/util/read_diag_inv_metric.hpp>
 
 namespace rstandev {
   template <typename ServiceFunctionT,

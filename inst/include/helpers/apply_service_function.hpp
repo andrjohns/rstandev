@@ -3,7 +3,7 @@
 
 #include <helpers/service_functions.hpp>
 #include <helpers/extract_args.hpp>
-#include <helpers/make_inv_metric.hpp>
+#include <helpers/inv_metric.hpp>
 #include <unordered_map>
 
 namespace rstandev {
@@ -110,7 +110,14 @@ using context_vector = std::vector<std::shared_ptr<stan::io::var_context>>;
 
     std::vector<std::unique_ptr<stan::io::dump>> unit_e_metrics;
     unit_e_metrics.reserve(num_chains);
-    if (!is_unit<F>::value) {
+    if (args["inv_metric"] != R_NilValue) {
+      std::istringstream rdump_stream(cpp11::as_cpp<std::string>(args["inv_metric"]));
+      stan::io::dump data_context(rdump_stream);
+      for (size_t i = 0; i < num_chains; ++i) {
+        unit_e_metrics.emplace_back(std::make_unique<stan::io::dump>(
+            data_context));
+      }
+    } else if (!is_unit<F>::value) {
       for (size_t i = 0; i < num_chains; ++i) {
         unit_e_metrics.emplace_back(std::make_unique<stan::io::dump>(
             make_inv_metric<F>(model.num_params_r())));
