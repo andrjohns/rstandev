@@ -143,6 +143,7 @@ stanmodel <- R6::R6Class(
 )
 
 stanmodel$set("public", name = "sample", value = sample)
+stanmodel$set("public", name = "optimize", value = optimize)
 
 
 #' @export
@@ -152,6 +153,6 @@ stan_model <- function(model_path = NULL, model_code = NULL,
                       model_code = model_code,
                       include_paths = include_paths)
   st$compile(...)
-  return(stn)
+  return(st)
 }
 

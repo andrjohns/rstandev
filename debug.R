@@ -15,6 +15,10 @@ sf <- st$sample(
   num_warmup=40000,
   num_samples = 40000,
   refresh=40000)
+
+sf <- st$optimize(
+  data = list(N=2,y=0:1),
+  algorithm = "LBFGS")
 Sys.time() -a
 
 num_cores <- min(8,4)

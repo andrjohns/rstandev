@@ -37,6 +37,22 @@ namespace internal {
     return std::forward_as_tuple(model, init_contexts, inv_metrics);
   }
 
+  template <typename ServiceFunT, typename InterruptT, typename LoggerT, typename InitWritersT,
+            typename SampleWritersT, typename DiagnosticWritersT,
+            stan::require_not_t<is_optimize<ServiceFunT>>* = nullptr>
+  decltype(auto) get_args_tail(InterruptT&& interrupt, LoggerT&& logger, InitWritersT&& init_writers,
+                               SampleWritersT&& sample_writers, DiagnosticWritersT&& diagnostic_writers) {
+    return std::forward_as_tuple(interrupt, logger, init_writers, sample_writers, diagnostic_writers);
+  }
+
+  template <typename ServiceFunT, typename InterruptT, typename LoggerT, typename InitWritersT,
+            typename SampleWritersT, typename DiagnosticWritersT,
+            stan::require_t<is_optimize<ServiceFunT>>* = nullptr>
+  decltype(auto) get_args_tail(InterruptT&& interrupt, LoggerT&& logger, InitWritersT&& init_writers,
+                               SampleWritersT&& sample_writers, DiagnosticWritersT&& diagnostic_writers) {
+    return std::forward_as_tuple(interrupt, logger, init_writers, sample_writers);
+  }
+
   template <typename ServiceFunT, typename ModelT, typename NumChainsT, typename InitContextsT,
             typename InvMetricsT, typename InterruptT,
             typename LoggerT, typename InitWritersT, typename SampleWritersT, typename DiagnosticWritersT,
@@ -59,7 +75,14 @@ namespace internal {
                   std::forward<decltype(*(init_contexts[i]))>(*(init_contexts[i])),
                   std::forward<decltype(*(inv_metrics[i]))>(*(inv_metrics[i]))),
                 args_tuple,
-                std::forward_as_tuple(interrupt, logger, init_writers[i], sample_writers[i], diagnostic_writers[i])));
+                get_args_tail<ServiceFunT>(
+                  std::forward<decltype(interrupt)>(interrupt),
+                  std::forward<decltype(logger)>(logger),
+                  std::forward<decltype(init_writers[i])>(init_writers[i]),
+                  std::forward<decltype(sample_writers[i])>(sample_writers[i]),
+                  std::forward<decltype(diagnostic_writers[i])>(diagnostic_writers[i])
+                )
+               ));
           }
         },
         tbb::simple_partitioner());
