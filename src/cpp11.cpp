@@ -7,14 +7,14 @@ using namespace Rcpp;
 #include "cpp11/declarations.hpp"
 #include <R_ext/Visibility.h>
 
-// log_prob.cpp
+// stan_method.cpp
 double log_prob(SEXP ext_model_ptr, std::vector<double> upars);
 extern "C" SEXP _rstandev_log_prob(SEXP ext_model_ptr, SEXP upars) {
   BEGIN_CPP11
     return cpp11::as_sexp(log_prob(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext_model_ptr), cpp11::as_cpp<cpp11::decay_t<std::vector<double>>>(upars)));
   END_CPP11
 }
-// log_prob.cpp
+// stan_method.cpp
 cpp11::doubles grad_log_prob(SEXP ext_model_ptr, std::vector<double> upars);
 extern "C" SEXP _rstandev_grad_log_prob(SEXP ext_model_ptr, SEXP upars) {
   BEGIN_CPP11

@@ -1,9 +1,9 @@
 libflags <- function() {
   paste(
     RcppParallel::LdFlags(),
-    "-L", shQuote(system.file("lib",package = "RcppParallel")),
+    paste0("-L", shQuote(dirname(RcppParallel::tbbLibraryPath("tbb")))),
     "-ltbb",
-    "-Wl,-rpath,", shQuote(RcppParallel::tbbLibraryPath("tbb")),
+    paste0("-Wl,-rpath,", shQuote(RcppParallel::tbbLibraryPath("tbb"))),
     "-L", shQuote(system.file("", package = "sundialr")),
     "-lsundials_all"
     #"-lOpencl"
@@ -12,12 +12,12 @@ libflags <- function() {
 
 cxxflags <- function() {
   paste(
-    "-I", shQuote(system.file("include", package = "rstandev")),
-    "-I", shQuote(system.file("include",package = "RcppEigen")),
-    "-I", shQuote(system.file("include",package = "RcppParallel")),
-    "-I", shQuote(system.file("include",package = "BH")),
-    "-I", shQuote(system.file("include",package = "sundialr")),
-    "-I", shQuote(system.file("include",package = "cpp11")),
+    paste0("-I", shQuote(system.file("include", package = "rstandev"))),
+    paste0("-I", shQuote(system.file("include",package = "RcppEigen"))),
+    paste0("-I", shQuote(system.file("include",package = "RcppParallel"))),
+    paste0("-I", shQuote(system.file("include",package = "BH"))),
+    paste0("-I", shQuote(system.file("include",package = "sundialr"))),
+    paste0("-I", shQuote(system.file("include",package = "cpp11"))),
     "-D_REENTRANT",
     "-DRCPP_PARALLEL_USE_TBB=1",
     "-DSTAN_THREADS",

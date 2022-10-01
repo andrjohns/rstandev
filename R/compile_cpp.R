@@ -40,7 +40,7 @@ compile_cpp <- function(cpp_locations, env, quiet = TRUE, return_env = TRUE) {
       "CXX_STD=CXX14",
       file = file.path(src_dir, "Makevars"), sep = "\n")
 
-  source_files <- normalizePath(c(cpp_path, cpp11_path), winslash = "/")
+  source_files <- c(paste0(name, ".cpp"), "cpp11.cpp")
 
   res <- callr::rcmd("SHLIB", source_files, user_profile = TRUE, show = !quiet, wd = src_dir)
   r_functions <- cpp11env$generate_r_functions(funs, package = name, use_package = TRUE)

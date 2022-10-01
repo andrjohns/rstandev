@@ -6,7 +6,7 @@
 #include <helpers/service_functions.hpp>
 #include <helpers/extract_args.hpp>
 #include <helpers/inv_metric.hpp>
-#include <Rinterface.h>
+#include <R.h>
 #include <Rcpp/iostream/Rstreambuf.h>
 #include <unordered_map>
 
