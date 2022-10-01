@@ -35,12 +35,10 @@ compile_cpp <- function(cpp_locations, env, quiet = TRUE, return_env = TRUE) {
   cpp11_path <- file.path(src_dir, "cpp11.cpp")
   cat(includes, file = cpp11_path, sep = "\n")
 
-  suffix <- ifelse(.Platform$OS.type == "windows", ".win", "")
-
   cat(paste0("PKG_CXXFLAGS=", cxxflags()),
       paste0("PKG_LIBS=", libflags()),
       "CXX_STD=CXX14",
-      file = file.path(src_dir, paste0("Makevars", suffix)), sep = "\n")
+      file = file.path(src_dir, "Makevars"), sep = "\n")
 
   source_files <- normalizePath(c(cpp_path, cpp11_path), winslash = "/")
 

@@ -3,7 +3,7 @@ libflags <- function() {
     RcppParallel::LdFlags(),
     "-L", shQuote(system.file("lib",package = "RcppParallel")),
     "-ltbb",
-    "-Wl,-rpath,", shQuote(system.file("lib",package = "RcppParallel")),
+    "-Wl,-rpath,", shQuote(RcppParallel::tbbLibraryPath("tbb")),
     "-L", shQuote(system.file("", package = "sundialr")),
     "-lsundials_all"
     #"-lOpencl"

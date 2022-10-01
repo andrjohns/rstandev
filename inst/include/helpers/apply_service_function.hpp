@@ -101,13 +101,8 @@ using context_vector = std::vector<std::shared_ptr<stan::io::var_context>>;
     decltype(auto) var_cont = var_context(cpp11::as_cpp<std::string>(args["rdump_data"]));
 
     size_t random_seed = cpp11::as_cpp<size_t>(args["random_seed"]);
-/*
-    decltype(auto) model = stan_model(
-            *var_context(cpp11::as_cpp<std::string>(args["rdump_data"])),
-            random_seed,
-            &std::cout);
-*/
-  cpp11::external_pointer<stan::model::model_base> model(args["model_ptr"]);
+
+    cpp11::external_pointer<stan::model::model_base> model(args["model_ptr"]);
     std::stringstream stream("", std::stringstream::in);
     context_vector init_contexts = context_vector(num_chains, std::make_shared<stan::io::dump>(stan::io::dump(stream)));
 
@@ -151,8 +146,9 @@ using context_vector = std::vector<std::shared_ptr<stan::io::var_context>>;
       }
     }
 
+
     return internal::apply_service_function_impl<F>(
-      *model.get(),
+      std::forward<decltype(*model.get())>(*model.get()),
       std::forward<size_t>(num_chains),
       std::forward<decltype(init_contexts)>(init_contexts),
       std::forward<decltype(unit_e_metrics)>(unit_e_metrics),
