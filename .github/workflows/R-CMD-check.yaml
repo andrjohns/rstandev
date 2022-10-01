@@ -46,7 +46,7 @@ jobs:
 
       - name: Install Patched sundialr
         run: |
-          remotes::install_github("andrjohns/sundialr")
+          remotes::install_github("andrjohns/sundialr@update-6.1")
         shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
