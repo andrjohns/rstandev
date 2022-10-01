@@ -25,7 +25,10 @@ cxxflags <- function() {
     "-Wno-deprecated-declarations",
     "-Wno-unknown-attributes",
     "-Wno-ignored-attributes",
-    "-Wno-sign-compare"
+    "-Wno-sign-compare",
+    "-Wno-parentheses",
+    "-Wno-unused-but-set-variable",
+    "-Wno-unused-variable"
 
     #,
     #"-DSTAN_OPENCL"

@@ -11,6 +11,8 @@
 #include <cpp11/doubles.hpp>
 #include <cpp11/strings.hpp>
 #include <cpp11/named_arg.hpp>
+#include <Rinterface.h>
+#include <Rcpp/iostream/Rstreambuf.h>
 #include <boost/random/additive_combine.hpp>
 #include <vector>
 
@@ -47,7 +49,7 @@ std::vector<double> unconstrain_pars(SEXP ext_model_ptr, std::string pars) {
     = rstandev::var_context(pars);
   std::vector<int> params_i;
   std::vector<double> vars;
-  ptr->transform_inits(*init_context.get(), params_i, vars, &std::cout);
+  ptr->transform_inits(*init_context.get(), params_i, vars, &Rcpp::Rcout);
   return vars;
 }
 
