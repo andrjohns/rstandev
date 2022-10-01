@@ -23,7 +23,9 @@ cxxflags <- function() {
     "-DSTAN_THREADS",
     "-Wno-deprecated-builtins",
     "-Wno-deprecated-declarations",
-    "-Wno-unknown-attributes"
+    "-Wno-unknown-attributes",
+    "-Wno-ignored-attributes",
+    "-Wno-sign-compare"
 
     #,
     #"-DSTAN_OPENCL"
