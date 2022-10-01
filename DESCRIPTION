@@ -20,7 +20,8 @@ Imports:
     loo,
     RcppParallel,
     callr,
-    decor
+    decor,
+    Rcpp, RcppEigen, BH, RcppParallel, sundialr, cpp11
 LinkingTo: Rcpp, RcppEigen, BH, RcppParallel, sundialr, cpp11
 URL: https://github.com/andrjohns/rstan.dev
 BugReports: https://github.com/andrjohns/rstan.dev/issues
