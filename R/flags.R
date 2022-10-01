@@ -1,5 +1,6 @@
 libflags <- function() {
   paste(
+    RcppParallel::LdFlags(),
     "-L", shQuote(system.file("lib",package = "RcppParallel")),
     "-ltbb",
     "-Wl,-rpath,", shQuote(system.file("lib",package = "RcppParallel")),

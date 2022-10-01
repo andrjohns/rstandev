@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # rstandev
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/andrjohns/rstan.dev/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/andrjohns/rstan.dev/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 An experimental, header-only interface to Stan in R
