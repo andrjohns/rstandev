@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# rstan.dev
+# rstandev
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -25,7 +25,7 @@ An experimental, header-only interface to Stan in R
 Initialise and compile a new stanmodel object:
 
 ```{r}
-library(rstan.dev)
+library(rstandev)
 
 model = "
 functions {
@@ -98,10 +98,10 @@ samp$loo()
 
 ## Installation
 
-You can install the development version of rstan.dev from [GitHub](https://github.com/) with:
+You can install the development version of rstandev from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("andrjohns/sundialr")
-devtools::install_github("andrjohns/rstan.dev")
+devtools::install_github("andrjohns/rstandev")
 ```

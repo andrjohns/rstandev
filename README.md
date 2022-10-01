@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# rstan.dev
+# rstandev
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -13,7 +13,7 @@ An experimental, header-only interface to Stan in R
 Initialise and compile a new stanmodel object:
 
 ``` r
-library(rstan.dev)
+library(rstandev)
 
 model = "
 functions {
@@ -100,11 +100,11 @@ samp$summary()
 #>    variable      mean median    sd    mad     q5    q95     rhat ess_b…¹ ess_t…²
 #>    <chr>        <dbl>  <dbl> <dbl>  <dbl>  <dbl>  <dbl>    <dbl>   <dbl>   <dbl>
 #>  1 lp__        -3.31  -3.02  0.759 0.336  -4.89  -2.77   1.00e 0  3.14e3   2587.
-#>  2 accept_sta…  0.928  0.975 0.114 0.0367  0.690  1      1.01e 0  1.01e4     NA 
-#>  3 stepsize__   0.932  0.933 0.110 0.154   0.792  1.07   1.89e14  4.02e0     NA 
+#>  2 accept_sta…  0.928  0.975 0.114 0.0367  0.690  1      1.01e 0  1.01e4     NA
+#>  3 stepsize__   0.932  0.933 0.110 0.154   0.792  1.07   1.89e14  4.02e0     NA
 #>  4 treedepth__  1.40   1     0.512 0       1      2      1.00e 0  7.04e3   4008.
-#>  5 n_leapfrog…  2.61   3     1.36  0       1      7      1.01e 0  9.13e2     NA 
-#>  6 divergent__  0      0     0     0       0      0     NA       NA          NA 
+#>  5 n_leapfrog…  2.61   3     1.36  0       1      7      1.01e 0  9.13e2     NA
+#>  6 divergent__  0      0     0     0       0      0     NA       NA          NA
 #>  7 energy__     3.80   3.49  1.03  0.734   2.83   5.85   1.00e 0  3.05e3   3125.
 #>  8 theta        0.498  0.495 0.220 0.251   0.140  0.860  1.00e 0  2.92e3   2775.
 #>  9 log_lik.1   -0.824 -0.684 0.589 0.487  -1.96  -0.150  1.00e 0  2.92e3   2775.
@@ -116,27 +116,27 @@ And the ELPD-LOO calculated with the `loo()` member:
 
 ``` r
 samp$loo()
-#> 
+#>
 #> Computed from 8000 by 2 log-likelihood matrix
-#> 
+#>
 #>          Estimate  SE
 #> elpd_loo     -2.1 0.0
 #> p_loo         0.8 0.0
 #> looic         4.3 0.0
 #> ------
 #> Monte Carlo SE of elpd_loo is 0.0.
-#> 
+#>
 #> All Pareto k estimates are good (k < 0.5).
 #> See help('pareto-k-diagnostic') for details.
 ```
 
 ## Installation
 
-You can install the development version of rstan.dev from
+You can install the development version of rstandev from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("andrjohns/sundialr")
-devtools::install_github("andrjohns/rstan.dev")
+devtools::install_github("andrjohns/rstandev")
 ```

@@ -1,10 +1,10 @@
 generate_cpp <- function(hpp_code, standalone_funs = FALSE) {
   exported_functions <- ""
   if (!standalone_funs) {
-    methods <- list.files(system.file("include", "exported_functions", package = "rstan.dev"))
+    methods <- list.files(system.file("include", "exported_functions", package = "rstandev"))
     cpp_methods <- sapply(methods, function(method) {
       readr::read_file(system.file("include", "exported_functions", method,
-                                      package = "rstan.dev"))
+                                      package = "rstandev"))
     })
     exported_functions <- c(exported_functions, paste(cpp_methods, collapse = "\n"))
   }

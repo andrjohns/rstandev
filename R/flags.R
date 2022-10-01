@@ -11,7 +11,7 @@ libflags <- function() {
 
 cxxflags <- function() {
   paste(
-    "-I", shQuote(system.file("include", package = "rstan.dev")),
+    "-I", shQuote(system.file("include", package = "rstandev")),
     "-I", shQuote(system.file("include",package = "RcppEigen")),
     "-I", shQuote(system.file("include",package = "RcppParallel")),
     "-I", shQuote(system.file("include",package = "BH")),

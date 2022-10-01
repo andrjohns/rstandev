@@ -35,52 +35,28 @@ stanmodel <- R6::R6Class(
       private$cpp11_export_def <- readr::read_file(file.path(cpp_locations$dir, "R", "cpp11.R"))
     },
     log_prob = function(data_list = NULL, upars) {
-      args <- list(
-        upars = upars
-      )
-      if (!is.null(data_list)) {
-        args$rdump_data <- stan_rdump(data_list)
-      } else if (!is.null(private$model_ptr)) {
-        args$model_ptr <- private$model_ptr
-      }
-      private$env$log_prob(args)
+      ptr <- private$env$new_model(stan_rdump(data_list), seed = 0)
+      log_prob(ptr, upars)
     },
     grad_log_prob = function(data_list = NULL, upars) {
-      args <- list(
-        upars = upars
-      )
-      if (!is.null(data_list)) {
-        args$rdump_data <- stan_rdump(data_list)
-      } else if (!is.null(private$model_ptr)) {
-        args$model_ptr <- private$model_ptr
-      }
-      private$env$grad_log_prob(args)
+      ptr <- private$env$new_model(stan_rdump(data_list), seed = 0)
+      grad_log_prob(ptr, upars)
     },
     get_param_names = function(data_list) {
-      args <- list(
-        rdump_string = stan_rdump(data_list)
-      )
-      private$env$get_param_names(args)
+      ptr <- private$env$new_model(stan_rdump(data_list), seed = 0)
+      get_param_names(ptr)
     },
     get_param_dims = function(data_list) {
-      args <- list(
-        rdump_string = stan_rdump(data_list)
-      )
-      private$env$get_dims(args)
+      ptr <- private$env$new_model(stan_rdump(data_list), seed = 0)
+      get_param_dims(ptr)
     },
     unconstrain_pars = function(data_list, init_list) {
-      args <- list(
-        rdump_data = stan_rdump(data_list),
-        init_string = stan_rdump(init_list)
-      )
-      private$env$unconstrain_pars(args)
+      ptr <- private$env$new_model(stan_rdump(data_list), seed = 0)
+      unconstrain_pars(ptr, stan_rdump(init_list))
     },
     constrain_pars = function(data_list, upars) {
-      args <- list(
-        rdump_data = stan_rdump(data_list),
-        upars = upars
-      )
-      private$env$constrain_pars(args)
+      ptr <- private$env$new_model(stan_rdump(data_list), seed = 0)
+      constrain_pars(ptr, upars)
     },
     refresh_env = function() {
       if (private$dynlib_ext != .Platform$dynlib.ext) {
@@ -121,6 +97,9 @@ stanmodel <- R6::R6Class(
         })
         invisible(NULL)
       }
+    },
+    get_model_ptr = function(data) {
+      private$env$new_model(stan_rdump(data), seed = 0)
     }
   ),
   private = list(
@@ -199,13 +178,12 @@ sample <- function(
       input_args$inv_metric <- stan_rdump(list(inv_metric=inv_metric))
     }
   }
+  input_args$model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
 
-  private$env$stan_methods_wrapper(service_name, input_args)
-  model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
+  stan_methods_wrapper(service_name, input_args)
   outputs <- paste0(input_args$output_dir, "/output", "_", 1:(num_chains), ".csv")
-  stanfit$new(self, private, outputs, model_ptr)
+  stanfit$new(self, private, outputs, input_args$model_ptr)
 }
-
 
 optimize <- function(
   data,
@@ -238,10 +216,10 @@ optimize <- function(
   input_args$rdump_data <- stan_rdump(data)
   input_args$id <- 1
 
-  private$env$stan_methods_wrapper(service_name, input_args)
-  model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
+  input_args$model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
+  stan_methods_wrapper(service_name, input_args)
   outputs <- paste0(input_args$output_dir, "/output", "_", 1:(num_chains), ".csv")
-  stanfit$new(self, private, outputs, model_ptr)
+  stanfit$new(self, private, outputs, input_args$model_ptr)
 }
 
 variational <- function(
@@ -274,10 +252,10 @@ variational <- function(
   input_args$rdump_data <- stan_rdump(data)
   input_args$id <- 1
 
-  private$env$stan_methods_wrapper(service_name, input_args)
-  model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
+  input_args$model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
+  stan_methods_wrapper(service_name, input_args)
   outputs <- paste0(input_args$output_dir, "/output", "_", 1:(num_chains), ".csv")
-  stanfit$new(self, private, outputs, model_ptr)
+  stanfit$new(self, private, outputs, input_args$model_ptr)
 }
 
 stanmodel$set("public", name = "sample", value = sample)
