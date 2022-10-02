@@ -6,7 +6,7 @@ stanfit <- R6::R6Class("stanfit",
     summary_table = NULL,
     loo_results = NULL,
     initialize = function(stanmodel, private_args, output_files, model_ptr) {
-      raw <- do.call(rbind.data.frame, purrr::map(output_files, function(sample) {
+      raw <- do.call(rbind.data.frame, lapply(output_files, function(sample) {
         readr::read_csv(sample, comment = "#", show_col_types = FALSE)
       }, .id = ".chain"))
       self$draws <- posterior::as_draws(raw)

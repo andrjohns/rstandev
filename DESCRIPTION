@@ -1,5 +1,5 @@
 Package: rstandev
-Title: A header-only interface to Stan
+Title: A lighter R interface to Stan
 Version: 0.0.0.9000
 Authors@R:
     person("Andrew", "Johnson", , "andrew.johnson@arjohnsonau.com", role = c("aut", "cre"))
@@ -9,17 +9,17 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 SystemRequirements: pandoc, C++14
-NeedsCompilation: no
+NeedsCompilation: yes
 Imports:
     posterior,
-    purrr,
     readr,
     R6,
     V8,
     rlang,
     loo,
     callr,
-    decor
+    decor,
+    RcppParallel
 LinkingTo: Rcpp, RcppEigen, BH, RcppParallel, sundialr, cpp11
 URL: https://github.com/andrjohns/rstan.dev
 BugReports: https://github.com/andrjohns/rstan.dev/issues

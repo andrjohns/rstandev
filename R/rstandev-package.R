@@ -7,7 +7,7 @@
 #' @importFrom decor cpp_decorations parse_cpp_function
 #' @importFrom callr rcmd
 #' @importFrom purrr map_chr walk
-#' @import readr read_csv read_file read_file_raw write_file
+#' @importFrom readr read_csv read_file read_file_raw write_file
 #' @importFrom V8 v8
 #' @importFrom rlang ns_env
 NULL

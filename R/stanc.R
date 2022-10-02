@@ -33,7 +33,7 @@ stanc <- function(model_code, standalone_functions = FALSE,
     nlines <- length(model_lines)
 
     math_decl <- grep("using namespace stan::math;", model_lines, fixed = TRUE)
-    all_includes <- paste(purrr::map_chr(external_cpp, readr::read_file), collapse = "\n")
+    all_includes <- paste(sapply(external_cpp, readr::read_file), collapse = "\n")
     model_lines <- c(model_lines[1:math_decl], all_includes, model_lines[(math_decl+1):nlines])
     paste(model_lines, collapse = "\n")
   } else {

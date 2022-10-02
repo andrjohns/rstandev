@@ -80,7 +80,7 @@ stanmodel <- R6::R6Class(
       funs <- grep("// [[stan::function]]", model_lines, fixed = TRUE)
       funs <- c(funs, length(model_lines))
 
-      stan_funs <- purrr::map_chr(seq_len(length(funs) - 1), function(ind) {
+      stan_funs <- sapply(seq_len(length(funs) - 1), function(ind) {
         fun_body <- model_lines[funs[ind]:(funs[ind + 1] - 1)]
         prep_fun_cpp(fun_body, model_lines)
       })
@@ -91,7 +91,7 @@ stanmodel <- R6::R6Class(
         invisible(compile_cpp(stan_cpp_locations, globalenv(), return_env = FALSE, quiet = quiet))
       } else {
         private$standalone_env <- compile_cpp(stan_cpp_locations, new.env(), quiet = quiet)
-        purrr::walk(stan_funs, function(fun) {
+        lapply(stan_funs, function(fun) {
           fun_name <- decor::parse_cpp_function(fun, is_attribute = TRUE)$name
           self[[fun_name]] <- private$standalone_env[[fun_name]]
         })

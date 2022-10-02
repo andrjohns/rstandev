@@ -14,8 +14,8 @@ insert_includes <- function(model_code, include_paths) {
       list.files(file.path(path), full.names = TRUE)
     })
 
-    include_code <- purrr::map_chr(files, function(file) {
-      path <- purrr::map_chr(files_present, function(file_list) {
+    include_code <- sapply(files, function(file) {
+      path <- sapply(files_present, function(file_list) {
         res <- grep(files, file_list, value = TRUE)
         ifelse(length(res) == 0, "", res)
       })
