@@ -12,7 +12,7 @@ generate_cpp <- function(hpp_code, standalone_funs = FALSE) {
   cpp_code <- paste(c(hpp_code, exported_functions), collapse = "\n")
   dir <- file.path(tempdir(), "stan_cpp11")
   if (dir.exists(dir)) {
-    unlink(dir, recursive = TRUE)
+    unlink(dir, recursive = TRUE, force = TRUE)
   }
   dir.create(dir, recursive = TRUE)
   file <- tempfile(tmpdir = dir, fileext = ".cpp")

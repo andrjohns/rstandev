@@ -112,7 +112,7 @@ namespace rstandev {
 
   template <typename F, stan::require_any_same_t<F, NutsUnitAdaptT, StaticUnitAdaptT>* = nullptr>
   inline static auto arg_types() {
-    return std::forward_as_tuple(
+    return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
       StanArg<double>("init_radius"),
@@ -133,7 +133,7 @@ namespace rstandev {
 
   template <typename F, stan::require_all_same_t<F, FixedParamT>* = nullptr>
   inline static auto arg_types() {
-    return std::forward_as_tuple(
+    return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
       StanArg<double>("init_radius"),
@@ -145,7 +145,7 @@ namespace rstandev {
 
   template <typename F, stan::require_t<is_advi<F>>* = nullptr>
   inline static auto arg_types() {
-    return std::forward_as_tuple(
+    return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
       StanArg<double>("init_radius"),
@@ -163,7 +163,7 @@ namespace rstandev {
 
   template <typename F, stan::require_all_same_t<F, BFGST>* = nullptr>
   inline static auto arg_types() {
-    return std::forward_as_tuple(
+    return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
       StanArg<double>("init_radius"),
@@ -181,7 +181,7 @@ namespace rstandev {
 
   template <typename F, stan::require_all_same_t<F, LBFGST>* = nullptr>
   inline static auto arg_types() {
-    return std::forward_as_tuple(
+    return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
       StanArg<double>("init_radius"),
@@ -200,7 +200,7 @@ namespace rstandev {
 
   template <typename F, stan::require_all_same_t<F, NewtonT>* = nullptr>
   inline static auto arg_types() {
-    return std::forward_as_tuple(
+    return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
       StanArg<double>("init_radius"),
@@ -212,7 +212,7 @@ namespace rstandev {
   template <typename F, stan::require_t<is_adapt<F>>* = nullptr,
             stan::require_all_not_same_t<F, NutsUnitAdaptT, StaticUnitAdaptT>* = nullptr>
   inline static auto arg_types() {
-    return std::forward_as_tuple(
+    return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
       StanArg<double>("init_radius"),
@@ -239,7 +239,7 @@ namespace rstandev {
             stan::require_not_t<is_optimize<F>>* = nullptr,
             stan::require_not_t<is_advi<F>>* = nullptr>
   inline static auto arg_types() {
-    return std::forward_as_tuple(
+    return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
       StanArg<double>("init_radius"),

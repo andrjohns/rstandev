@@ -147,8 +147,6 @@ using context_vector = std::vector<std::shared_ptr<stan::io::var_context>>;
             make_inv_metric<F>(model->num_params_r())));
       }
     }
-
-
     return internal::apply_service_function_impl<F>(
       std::forward<decltype(*model.get())>(*model.get()),
       std::forward<size_t>(num_chains),

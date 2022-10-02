@@ -13,7 +13,7 @@ namespace rstandev {
     return stan::math::index_apply<std::tuple_size<std::decay_t<ArgTypesTuple>>::value>(
         [args_list, &args_tuple](auto... Is) {
           return std::make_tuple(
-              cpp11::as_cpp<std::decay_t<decltype(std::get<Is>(args_tuple).dummy)>>(
+              cpp11::as_cpp<std::decay_t<typename std::decay_t<decltype(std::get<Is>(args_tuple))>::arg_type>>(
                 args_list[std::get<Is>(args_tuple).arg_name]
             )...);
         });

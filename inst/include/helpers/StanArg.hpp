@@ -7,7 +7,7 @@ namespace rstandev {
   template <typename T>
   class StanArg {
     public:
-      T dummy;
+      using arg_type = std::decay_t<T>;
       std::string arg_name;
 
       StanArg(std::string name) {

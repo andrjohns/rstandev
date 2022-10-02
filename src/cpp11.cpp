@@ -7,49 +7,49 @@ using namespace Rcpp;
 #include "cpp11/declarations.hpp"
 #include <R_ext/Visibility.h>
 
-// stan_method.cpp
+// stan_methods.cpp
 double log_prob(SEXP ext_model_ptr, std::vector<double> upars);
 extern "C" SEXP _rstandev_log_prob(SEXP ext_model_ptr, SEXP upars) {
   BEGIN_CPP11
     return cpp11::as_sexp(log_prob(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext_model_ptr), cpp11::as_cpp<cpp11::decay_t<std::vector<double>>>(upars)));
   END_CPP11
 }
-// stan_method.cpp
+// stan_methods.cpp
 cpp11::doubles grad_log_prob(SEXP ext_model_ptr, std::vector<double> upars);
 extern "C" SEXP _rstandev_grad_log_prob(SEXP ext_model_ptr, SEXP upars) {
   BEGIN_CPP11
     return cpp11::as_sexp(grad_log_prob(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext_model_ptr), cpp11::as_cpp<cpp11::decay_t<std::vector<double>>>(upars)));
   END_CPP11
 }
-// stan_method.cpp
+// stan_methods.cpp
 std::vector<std::string> get_param_names(SEXP ext_model_ptr);
 extern "C" SEXP _rstandev_get_param_names(SEXP ext_model_ptr) {
   BEGIN_CPP11
     return cpp11::as_sexp(get_param_names(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext_model_ptr)));
   END_CPP11
 }
-// stan_method.cpp
+// stan_methods.cpp
 cpp11::list get_dims(SEXP ext_model_ptr);
 extern "C" SEXP _rstandev_get_dims(SEXP ext_model_ptr) {
   BEGIN_CPP11
     return cpp11::as_sexp(get_dims(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext_model_ptr)));
   END_CPP11
 }
-// stan_method.cpp
+// stan_methods.cpp
 std::vector<double> unconstrain_pars(SEXP ext_model_ptr, std::string pars);
 extern "C" SEXP _rstandev_unconstrain_pars(SEXP ext_model_ptr, SEXP pars) {
   BEGIN_CPP11
     return cpp11::as_sexp(unconstrain_pars(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext_model_ptr), cpp11::as_cpp<cpp11::decay_t<std::string>>(pars)));
   END_CPP11
 }
-// stan_method.cpp
+// stan_methods.cpp
 std::vector<double> constrain_pars(SEXP ext_model_ptr, std::vector<double> upars);
 extern "C" SEXP _rstandev_constrain_pars(SEXP ext_model_ptr, SEXP upars) {
   BEGIN_CPP11
     return cpp11::as_sexp(constrain_pars(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext_model_ptr), cpp11::as_cpp<cpp11::decay_t<std::vector<double>>>(upars)));
   END_CPP11
 }
-// stan_method.cpp
+// stan_methods.cpp
 int stan_methods_wrapper(std::string name, cpp11::list args);
 extern "C" SEXP _rstandev_stan_methods_wrapper(SEXP name, SEXP args) {
   BEGIN_CPP11

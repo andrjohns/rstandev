@@ -147,9 +147,9 @@ sample <- function(
   max_depth = 10,
   metric = "diag_e",
   inv_metric = NULL,
-  stepsize = 1,
-  stepsize_jitter = 0,
-  init_radius = 2,
+  stepsize = 1.0,
+  stepsize_jitter = 0.0,
+  init_radius = 2.0,
   refresh = 200
   ) {
 
@@ -179,7 +179,6 @@ sample <- function(
     }
   }
   input_args$model_ptr <- private$env$new_model(input_args$rdump_data, seed = random_seed)
-
   stan_methods_wrapper(service_name, input_args)
   outputs <- paste0(input_args$output_dir, "/output", "_", 1:(num_chains), ".csv")
   stanfit$new(self, private, outputs, input_args$model_ptr)
@@ -271,4 +270,3 @@ stan_model <- function(model_path = NULL, model_code = NULL,
   st$compile(...)
   return(st)
 }
-

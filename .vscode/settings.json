@@ -81,6 +81,10 @@
       "vector": "cpp",
       "algorithm": "cpp",
       "filesystem": "cpp",
-      "__memory": "cpp"
+      "__memory": "cpp",
+      "functional": "cpp",
+      "xmemory": "cpp",
+      "xstddef": "cpp",
+      "xstring": "cpp"
     }
 }
