@@ -7,6 +7,6 @@ test_that("compilation works", {
   sf <- st$sample(
     data = list("y_mean" = 0.0),
     num_chains = 2,
-    num_threads = 2,
+    num_threads = 1,
     refresh = 4000)
 })

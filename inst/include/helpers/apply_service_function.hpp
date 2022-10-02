@@ -110,8 +110,8 @@ using context_vector = std::vector<std::shared_ptr<stan::io::var_context>>;
     context_vector init_contexts = context_vector(num_chains, std::make_shared<stan::io::dump>(stan::io::dump(stream)));
 
     stan::callbacks::interrupt interrupt;
-    stan::callbacks::stream_logger logger(Rcpp::Rcout, Rcpp::Rcout, Rcpp::Rcout,
-                                          Rcpp::Rcerr, Rcpp::Rcerr);
+    stan::callbacks::stream_logger logger(std::cout, std::cout, std::cout,
+                                          std::cerr, std::cerr);
 
     std::vector<stan::callbacks::unique_stream_writer<std::ostream>>
         sample_writers;
