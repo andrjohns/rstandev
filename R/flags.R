@@ -4,6 +4,9 @@ libflags <- function() {
     paste0("-L", shQuote(dirname(RcppParallel::tbbLibraryPath("tbb")))),
     "-ltbb",
     paste0("-Wl,-rpath,", shQuote(RcppParallel::tbbLibraryPath("tbb"))),
+    paste0("-L", shQuote(dirname(RcppParallel::tbbLibraryPath("tbbmalloc")))),
+    "-ltbbmalloc",
+    paste0("-Wl,-rpath,", shQuote(RcppParallel::tbbLibraryPath("tbbmalloc"))),
     "-L", shQuote(system.file("", package = "sundialr")),
     "-lsundials_all"
     #"-lOpencl"
