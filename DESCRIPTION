@@ -28,4 +28,4 @@ BugReports: https://github.com/andrjohns/rstan.dev/issues
 Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Remotes: andrjohns/sundialr
+Remotes: andrjohns/sundialr@update-6.1
