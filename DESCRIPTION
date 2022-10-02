@@ -19,6 +19,7 @@ Imports:
     loo,
     callr,
     decor,
+    Rcpp,
     RcppParallel,
     RcppEigen,
     BH,
