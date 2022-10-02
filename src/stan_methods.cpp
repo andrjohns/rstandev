@@ -110,6 +110,9 @@ int stan_methods_wrapper(std::string name, cpp11::list args) {
     {"meanfield", rstandev::apply_service_function<rstandev::MeanFieldT>}
 
   };
-  tbb::global_control c(tbb::global_control::max_allowed_parallelism, cpp11::as_cpp<size_t>(args["num_threads"]));
+  static tbb::global_control tbb_gc(
+      tbb::global_control::max_allowed_parallelism, cpp11::as_cpp<size_t>(args["num_threads"]));
+  static tbb::task_arena tbb_arena(cpp11::as_cpp<size_t>(args["num_threads"]), 1);
+  tbb_arena.initialize();
   return methods_index.at(name)(args);
 }

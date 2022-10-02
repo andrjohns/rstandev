@@ -14,7 +14,7 @@ namespace rstandev {
         new StanModelT(
             *var_context(rdump_string),
             seed,
-            &Rcpp:Rcout)
+            &Rcpp::Rcout)
     );
     return ptr;
   }
