@@ -104,7 +104,7 @@ stanmodel <- R6::R6Class(
     sample = function(
       data,
       init = NULL,
-      output_dir = tempdir(),
+      output_dir = gsub("\\\\", "/", tempdir()),
       num_chains = 4,
       num_threads = 1,
       random_seed = 0,

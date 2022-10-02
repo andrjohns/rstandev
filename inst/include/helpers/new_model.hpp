@@ -3,6 +3,8 @@
 
 #include <helpers/var_context.hpp>
 #include <cpp11/external_pointer.hpp>
+#include <R.h>
+#include <Rcpp/iostream/Rstreambuf.h>
 #include <iostream>
 #include <string>
 
