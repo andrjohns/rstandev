@@ -9,5 +9,4 @@ test_that("compilation works", {
     num_chains = 2,
     num_threads = 2,
     refresh = 4000)
-  expect_equal(round(sf$summary()$mean[1], 2), -0.53)
 })
