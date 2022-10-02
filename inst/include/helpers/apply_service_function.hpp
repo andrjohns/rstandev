@@ -20,12 +20,13 @@ namespace internal {
                                   InvMetricsT&& inv_metrics, InterruptT&& interrupt, LoggerT&& logger, InitWritersT&& init_writers,
                                   SampleWritersT&& sample_writers, DiagnosticWritersT&& diagnostic_writers,
                                   ArgsListT&& args) {
-    return stan::math::apply(
-          services_fun<ServiceFunT>(),
-          std::tuple_cat(
+    decltype(auto) args_tuple = std::tuple_cat(
             std::forward_as_tuple(model, num_chains, init_contexts, inv_metrics),
             extract_args(arg_types<ServiceFunT>(), args),
-            std::forward_as_tuple(interrupt, logger, init_writers, sample_writers, diagnostic_writers))
+            std::forward_as_tuple(interrupt, logger, init_writers, sample_writers, diagnostic_writers));
+    return stan::math::apply(
+          services_fun<ServiceFunT>(),
+          std::forward<decltype(args_tuple)>(args_tuple)
         );
   }
 

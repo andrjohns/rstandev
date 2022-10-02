@@ -8,7 +8,7 @@ stanfit <- R6::R6Class("stanfit",
     initialize = function(stanmodel, private_args, output_files, model_ptr) {
       raw <- do.call(rbind.data.frame, lapply(output_files, function(sample) {
         readr::read_csv(sample, comment = "#", show_col_types = FALSE)
-      }, .id = ".chain"))
+      }))
       self$draws <- posterior::as_draws(raw)
       self$hpp_code <- stanmodel$hpp_code
       self$model_code <- stanmodel$model_code
