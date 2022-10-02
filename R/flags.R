@@ -1,6 +1,5 @@
 libflags <- function() {
   paste(
-    RcppParallel::LdFlags(),
     paste0("-L", shQuote(dirname(RcppParallel::tbbLibraryPath("tbb")))),
     "-ltbb",
     paste0("-Wl,-rpath,", shQuote(RcppParallel::tbbLibraryPath("tbb"))),

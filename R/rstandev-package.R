@@ -3,6 +3,10 @@
 #' @importFrom RcppParallel RcppParallelLibs
 #' @import posterior
 #' @import loo
+#' @import BH
+#' @import Rcpp
+#' @import RcppEigen
+#' @import sundialr
 #' @importFrom R6 R6Class
 #' @importFrom decor cpp_decorations parse_cpp_function
 #' @importFrom callr rcmd
