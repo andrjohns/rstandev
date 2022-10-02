@@ -18,10 +18,8 @@ Imports:
     V8,
     rlang,
     loo,
-    dplyr,
     callr,
-    decor,
-    Rcpp, RcppEigen, BH, RcppParallel, sundialr, cpp11
+    decor
 LinkingTo: Rcpp, RcppEigen, BH, RcppParallel, sundialr, cpp11
 URL: https://github.com/andrjohns/rstan.dev
 BugReports: https://github.com/andrjohns/rstan.dev/issues

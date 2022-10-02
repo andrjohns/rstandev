@@ -1,10 +1,13 @@
 
 #' @useDynLib rstandev, .registration = TRUE
 #' @importFrom RcppParallel RcppParallelLibs
-#' @export log_prob
-#' @export grad_log_prob
-#' @export get_param_names
-#' @export get_dims
-#' @export unconstrain_pars
-#' @export constrain_pars
+#' @import posterior
+#' @import loo
+#' @importFrom R6 R6Class
+#' @importFrom decor cpp_decorations parse_cpp_function
+#' @importFrom callr rcmd
+#' @importFrom purrr map_chr walk
+#' @import readr read_csv read_file read_file_raw write_file
+#' @importFrom V8 v8
+#' @importFrom rlang ns_env
 NULL

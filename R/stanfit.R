@@ -6,9 +6,9 @@ stanfit <- R6::R6Class("stanfit",
     summary_table = NULL,
     loo_results = NULL,
     initialize = function(stanmodel, private_args, output_files, model_ptr) {
-      raw <- purrr::map_dfr(output_files, function(sample) {
+      raw <- do.call(rbind.data.frame, purrr::map(output_files, function(sample) {
         readr::read_csv(sample, comment = "#", show_col_types = FALSE)
-      }, .id = ".chain")
+      }, .id = ".chain"))
       self$draws <- posterior::as_draws(raw)
       self$hpp_code <- stanmodel$hpp_code
       self$model_code <- stanmodel$model_code
