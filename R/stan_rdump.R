@@ -25,7 +25,7 @@ data_list2array <- function(x) {
   aperm(x, c(lendimx1 + 1L, seq_len(lendimx1)))
 }
 
-stan_rdump <- function(list) {
+stan_rdump <- function(list, quiet = TRUE) {
   l2 <- NULL
   addnlpat <- paste0("(.{1,", 100, "})(\\s|$)")
   dump_string <- ""

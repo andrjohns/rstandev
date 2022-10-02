@@ -21,7 +21,7 @@
 double log_prob(SEXP ext_model_ptr, std::vector<double> upars) {
   cpp11::external_pointer<stan::model::model_base> ptr(ext_model_ptr);
   std::vector<int> params_i;
-  return ptr->log_prob<false, true>(upars, params_i, &std::cout);
+  return ptr->log_prob<false, true>(upars, params_i, &Rcpp::Rcout);
 }
 
 [[cpp11::register]]
@@ -70,7 +70,7 @@ std::vector<double> unconstrain_pars(SEXP ext_model_ptr, std::string pars) {
     = rstandev::var_context(pars);
   std::vector<int> params_i;
   std::vector<double> vars;
-  ptr->transform_inits(*init_context.get(), params_i, vars, &std::cout);
+  ptr->transform_inits(*init_context.get(), params_i, vars, &Rcpp::Rcout);
   return vars;
 }
 
