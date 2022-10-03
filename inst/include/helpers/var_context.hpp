@@ -2,6 +2,7 @@
 #define RSTANDEV_HELPERS_VAR_CONTEXT_HPP
 
 #include <stan/io/json/json_data.hpp>
+#include <memory>
 
 namespace rstandev {
   std::shared_ptr<stan::io::var_context> var_context(std::string rdump_string) {
