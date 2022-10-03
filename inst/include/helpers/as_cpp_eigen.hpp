@@ -6,6 +6,7 @@
 #include <cpp11/doubles.hpp>
 #include <cpp11/sexp.hpp>
 #include <cpp11/as.hpp>
+#include <cpp11/list.hpp>
 #include <boost/preprocessor.hpp>
 
 #define TO_SEQ_ELEM(z, n, data) (n)

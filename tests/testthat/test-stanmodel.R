@@ -2,6 +2,7 @@
 modcode <- "data { real y_mean; } parameters { real y; } model { y ~ normal(y_mean, 1); }"
 
 test_that("compilation works", {
+  precompile_model_headers(force = TRUE)
   st <- stan_model(model_code = modcode, quiet = FALSE)
   sf <- st$sample(
     data = list("y_mean" = 0.0),

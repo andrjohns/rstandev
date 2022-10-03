@@ -2,6 +2,7 @@
 #define RSTANDEV_HPP
 
 #include <helpers/apply_service_function.hpp>
+#include <helpers/as_cpp_eigen.hpp>
 #include <helpers/extract_args.hpp>
 #include <helpers/inv_metric.hpp>
 #include <helpers/new_model.hpp>

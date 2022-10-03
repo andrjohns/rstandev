@@ -24,23 +24,25 @@ compile_cpp <- function(cpp_locations, env, quiet = TRUE, return_env = TRUE) {
   cpp11env$check_valid_attributes(all_decorations, file = cpp_path)
   funs <- cpp11env$get_registered_functions(all_decorations, "cpp11::register")
 
-  cpp_functions_definitions <- cpp11env$generate_cpp_functions(funs, package = name)
+  model_hpp <- readr::read_file(cpp_locations$file)
+  exported_fun <- cpp11env$generate_cpp_functions(funs, package = name)
+  model_hpp <- gsub("#include <stan/model/model_header.hpp>", "#include <stan_meta_header.hpp>", model_hpp, fixed = TRUE)
+  cat(model_hpp, file = file.path(src_dir, file), sep = "\n")
+  cat(c("#include <cpp11_meta_header.hpp>", exported_fun), file = file.path(src_dir, "cpp11.cpp"), sep = "\n")
 
-  includes <- c('#include "cpp11/declarations.hpp"',
-                '#include <helpers/as_cpp_eigen.hpp>',
-                '#include <stan/math/prim/meta.hpp>',
-                "using namespace ::cpp11;",
-                cpp_functions_definitions)
-
-  cpp11_path <- file.path(src_dir, "cpp11.cpp")
-  cat(includes, file = cpp11_path, sep = "\n")
-
-  cat(paste0("PKG_CXXFLAGS=", cxxflags()),
+  cat(paste0("PKG_CXXFLAGS=", cxxflags(precomp_header="meta")),
       paste0("PKG_LIBS=", libflags()),
       "CXX_STD=CXX14",
       file = file.path(src_dir, "Makevars"), sep = "\n")
 
-  source_files <- c(paste0(name, ".cpp"), "cpp11.cpp")
+  res1 <- callr::rcmd("COMPILE", "cpp11.cpp", user_profile = TRUE, show = !quiet, wd = src_dir)
+
+  cat(paste0("PKG_CXXFLAGS=", cxxflags(precomp_header="model")),
+      paste0("PKG_LIBS=", libflags()),
+      "CXX_STD=CXX14",
+      file = file.path(src_dir, "Makevars"), sep = "\n", append = FALSE)
+
+  source_files <- c(paste0(name, ".cpp"), "cpp11.o")
 
   res <- callr::rcmd("SHLIB", source_files, user_profile = TRUE, show = !quiet, wd = src_dir)
   r_functions <- cpp11env$generate_r_functions(funs, package = name, use_package = TRUE)
