@@ -5,6 +5,3 @@
 .vscode
 ^\.github$
 inst/include/upstream
-configure
-configure.win
-src/Makevars.in

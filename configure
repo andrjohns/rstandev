@@ -7,7 +7,3 @@ cp src/Makevars.in src/Makevars
 echo "PKG_CXXFLAGS=" $CXXFLAGS >> src/Makevars
 echo "PKG_LIBS=" $LIBS >> src/Makevars
 
-rm -rf inst/include/stan
-mkdir -p inst/include/stan
-cp -r inst/include/upstream/math/stan inst/include/
-cp -r inst/include/upstream/stan/src/stan inst/include/

@@ -1,6 +1,3 @@
 [submodule "inst/include/upstream/stan"]
 	path = inst/include/upstream/stan
 	url = https://github.com/stan-dev/stan
-[submodule "inst/include/upstream/math"]
-	path = inst/include/upstream/math
-	url = https://github.com/stan-dev/math
