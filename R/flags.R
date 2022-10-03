@@ -15,12 +15,12 @@ libflags <- function() {
 cxxflags <- function() {
   paste(
     paste0("-I", shQuote(system.file("include", package = "rstandev"))),
-    paste0("-I", shQuote(system.file("include",package = "Rcpp"))),
-    paste0("-I", shQuote(system.file("include",package = "RcppEigen"))),
-    paste0("-I", shQuote(system.file("include",package = "RcppParallel"))),
-    paste0("-I", shQuote(system.file("include",package = "BH"))),
-    paste0("-I", shQuote(system.file("include",package = "sundialr"))),
-    paste0("-I", shQuote(system.file("include",package = "cpp11"))),
+    paste0("-I", shQuote(system.file("include", package = "Rcpp"))),
+    paste0("-I", shQuote(system.file("include", package = "RcppEigen"))),
+    paste0("-I", shQuote(system.file("include", package = "RcppParallel"))),
+    paste0("-I", shQuote(system.file("include", package = "BH"))),
+    paste0("-I", shQuote(system.file("include", package = "sundialr"))),
+    paste0("-I", shQuote(system.file("include", package = "cpp11"))),
     "-D_REENTRANT",
     "-DRCPP_PARALLEL_USE_TBB=1",
     "-DSTAN_THREADS",

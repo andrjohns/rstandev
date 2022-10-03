@@ -1,4 +1,4 @@
-#' @export
+
 stanfit <- R6::R6Class("stanfit",
   inherit = stanmodel,
   public = list(

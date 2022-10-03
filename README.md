@@ -44,8 +44,7 @@ generated quantities {
 }
 "
 
-stmod <- stanmodel$new(model_code = model)
-stmod$compile()
+stmod <- stan_model(model_code = model)
 #> ℹ 1 functions decorated with [[cpp11::register]]
 ```
 
@@ -82,13 +81,51 @@ stmod$rtn_rowvec(c(1, 2, 3))
 #> [1] 1 2 3
 ```
 
-Sampling can then be performed using the `sample()` member:
+Sampling can then be performed using the `sample()` member. All chain
+parallelism is managed through the TBB rather than R, so the number of
+threads specified by `num_threads` is distributed both between-chain and
+within-chain:
 
 ``` r
 samp <- stmod$sample(
   data = list(N=2, y=0:1),
   num_chains = 4,
-  num_threads = 8, refresh = 1000)
+  num_threads = 8, refresh = 2000)
+#> Chain [1] Iteration:    1 / 4000 [  0%]  (Warmup)
+#> Chain [3] Iteration:    1 / 4000 [  0%]  (Warmup)
+#> Chain [2] Iteration:    1 / 4000 [  0%]  (Warmup)
+#> Chain [4] Iteration:    1 / 4000 [  0%]  (Warmup)
+#> Chain [2] Iteration: 2000 / 4000 [ 50%]  (Warmup)
+#> Chain [2] Iteration: 2001 / 4000 [ 50%]  (Sampling)
+#> Chain [1] Iteration: 2000 / 4000 [ 50%]  (Warmup)
+#> Chain [1] Iteration: 2001 / 4000 [ 50%]  (Sampling)
+#> Chain [3] Iteration: 2000 / 4000 [ 50%]  (Warmup)
+#> Chain [3] Iteration: 2001 / 4000 [ 50%]  (Sampling)
+#> Chain [4] Iteration: 2000 / 4000 [ 50%]  (Warmup)
+#> Chain [4] Iteration: 2001 / 4000 [ 50%]  (Sampling)
+#> Chain [2] Iteration: 4000 / 4000 [100%]  (Sampling)
+#> 
+#>  Elapsed Time: 2.13 seconds (Warm-up)
+#>                2.376 seconds (Sampling)
+#>                4.506 seconds (Total)
+#> 
+#> Chain [1] Iteration: 4000 / 4000 [100%]  (Sampling)
+#> 
+#>  Elapsed Time: 2.171 seconds (Warm-up)
+#>                2.366 seconds (Sampling)
+#>                4.537 seconds (Total)
+#> 
+#> Chain [3] Iteration: 4000 / 4000 [100%]  (Sampling)
+#> 
+#>  Elapsed Time: 2.178 seconds (Warm-up)
+#>                2.39 seconds (Sampling)
+#>                4.568 seconds (Total)
+#> 
+#> Chain [4] Iteration: 4000 / 4000 [100%]  (Sampling)
+#> 
+#>  Elapsed Time: 2.208 seconds (Warm-up)
+#>                2.386 seconds (Sampling)
+#>                4.594 seconds (Total)
 ```
 
 Similarly for `optimize()` and `variational()` members.
@@ -99,18 +136,18 @@ The generated `stanfit` object can then be summarised with the
 ``` r
 samp$summary()
 #> # A tibble: 10 × 10
-#>    variable     mean   median      sd     mad       q5      q95     rhat ess_b…¹
-#>    <chr>       <dbl>    <dbl>   <dbl>   <dbl>    <dbl>    <dbl>    <dbl>   <dbl>
-#>  1 lp__     -3.34e+0 -3.04e+0 7.65e-1 3.61e-1 -4.92e+0 -2.77e+0  1.00e 0 1720.  
-#>  2 accept_…  8.16e-1  8.84e-1 1.90e-1 1.54e-1  4.19e-1  9.99e-1  1.02e 0  159.  
-#>  3 stepsiz…  1.57e-3  1.59e-3 4.42e-4 6.27e-4  1.08e-3  2.02e-3  1.89e14    4.02
-#>  4 treedep…  1   e+1  1   e+1 0       0        1   e+1  1   e+1 NA         NA   
-#>  5 n_leapf…  1.02e+3  1.02e+3 0       0        1.02e+3  1.02e+3 NA         NA   
-#>  6 diverge…  0        0       0       0        0        0       NA         NA   
-#>  7 energy__  3.81e+0  3.49e+0 1.02e+0 7.51e-1  2.82e+0  5.84e+0  1.00e 0 2233.  
-#>  8 theta     4.97e-1  4.95e-1 2.25e-1 2.60e-1  1.35e-1  8.67e-1  1.00e 0  889.  
-#>  9 log_lik… -8.29e-1 -6.83e-1 6.03e-1 5.00e-1 -2.02e+0 -1.45e-1  1.00e 0  889.  
-#> 10 log_lik… -8.39e-1 -7.04e-1 5.96e-1 5.18e-1 -2.00e+0 -1.43e-1  1.00e 0  889.  
+#>    variable        mean   median      sd     mad       q5      q95  rhat ess_b…¹
+#>    <chr>          <dbl>    <dbl>   <dbl>   <dbl>    <dbl>    <dbl> <dbl>   <dbl>
+#>  1 lp__        -3.34e+0 -3.04e+0 7.65e-1 3.61e-1 -4.92e+0 -2.77e+0  1.00 1698.  
+#>  2 accept_sta…  8.16e-1  8.84e-1 1.90e-1 1.54e-1  4.19e-1  9.99e-1  1.00  436.  
+#>  3 stepsize__   1.57e-3  1.59e-3 4.42e-4 6.27e-4  1.08e-3  2.02e-3  1.28    3.18
+#>  4 treedepth__  1   e+1  1   e+1 0       0        1   e+1  1   e+1 NA      NA   
+#>  5 n_leapfrog…  1.02e+3  1.02e+3 0       0        1.02e+3  1.02e+3 NA      NA   
+#>  6 divergent__  0        0       0       0        0        0       NA      NA   
+#>  7 energy__     3.81e+0  3.49e+0 1.02e+0 7.51e-1  2.82e+0  5.84e+0  1.00 2213.  
+#>  8 theta        4.97e-1  4.95e-1 2.25e-1 2.60e-1  1.35e-1  8.67e-1  1.00  861.  
+#>  9 log_lik.1   -8.29e-1 -6.83e-1 6.03e-1 5.00e-1 -2.02e+0 -1.45e-1  1.00  861.  
+#> 10 log_lik.2   -8.39e-1 -7.04e-1 5.96e-1 5.18e-1 -2.00e+0 -1.43e-1  1.00  861.  
 #> # … with 1 more variable: ess_tail <dbl>, and abbreviated variable name
 #> #   ¹​ess_bulk
 ```
@@ -140,6 +177,5 @@ You can install the development version of rstandev from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("andrjohns/sundialr")
 devtools::install_github("andrjohns/rstandev")
 ```

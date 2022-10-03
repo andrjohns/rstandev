@@ -1,4 +1,0 @@
-CXX_STD=CXX14
-PKG_CPPFLAGS=-I'../inst/include' -D_REENTRANT -DSTAN_THREADS
-PKG_LIBS += $(shell "${R_HOME}/bin/Rscript" -e "RcppParallel::LdFlags()")
-PKG_CXXFLAGS += $(shell "${R_HOME}/bin/Rscript" -e "RcppParallel::CxxFlags()")

@@ -1,4 +1,4 @@
-#' @export
+
 stanmodel <- R6::R6Class(
   "stanmodel",
   lock_objects = FALSE,
@@ -253,6 +253,13 @@ stanmodel <- R6::R6Class(
   )
 )
 
+#' Wrapper function to source and compile Stan model
+#' @description Creates the base Stan class containing the compiled model
+#'   and access to sampling/optimisation/variational methods
+#' @param model_path The path to a `.stan` file
+#' @param model_code The stan model as a single string
+#' @param include_paths A character vector of paths to find `.stan` files referenced by `#include` statements
+#' @param ... Any additional arguments to be passed to the $compile() method
 #' @export
 stan_model <- function(model_path = NULL, model_code = NULL,
                         include_paths = NULL, ...) {

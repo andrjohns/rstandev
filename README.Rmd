@@ -55,8 +55,7 @@ generated quantities {
 }
 "
 
-stmod <- stanmodel$new(model_code = model)
-stmod$compile()
+stmod <- stan_model(model_code = model)
 ```
 
 The compiled `stanmodel` object can then call `log_prob` and `grad_log_prob` as long as data is also passed:
@@ -78,12 +77,12 @@ stmod$expose_functions()
 stmod$rtn_rowvec(c(1, 2, 3))
 ```
 
-Sampling can then be performed using the `sample()` member:
+Sampling can then be performed using the `sample()` member. All chain parallelism is managed through the TBB rather than R, so the number of threads specified by `num_threads` is distributed both between-chain and within-chain:
 ```{r}
 samp <- stmod$sample(
   data = list(N=2, y=0:1),
   num_chains = 4,
-  num_threads = 8, refresh = 1000)
+  num_threads = 8, refresh = 2000)
 ```
 Similarly for `optimize()` and `variational()` members.
 
@@ -103,6 +102,5 @@ You can install the development version of rstandev from [GitHub](https://github
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("andrjohns/sundialr")
 devtools::install_github("andrjohns/rstandev")
 ```
