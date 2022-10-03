@@ -1,117 +1,13 @@
-#ifndef RSTANDEV_SERVICES_HMC_NUTS_HPP
-#define RSTANDEV_SERVICES_HMC_NUTS_HPP
+#ifndef RSTANDEV_HELPERS_SERVICE_ARG_TYPES_HPP
+#define RSTANDEV_HELPERS_SERVICE_ARG_TYPES_HPP
 
 #include <helpers/StanArg.hpp>
-#include <stan/callbacks/stream_logger.hpp>
-#include <stan/callbacks/unique_stream_writer.hpp>
-#include <stan/services/sample/hmc_nuts_dense_e_adapt.hpp>
-#include <stan/services/sample/hmc_nuts_diag_e_adapt.hpp>
-#include <stan/services/sample/hmc_nuts_unit_e_adapt.hpp>
-#include <stan/services/sample/hmc_nuts_dense_e.hpp>
-#include <stan/services/sample/hmc_nuts_diag_e.hpp>
-#include <stan/services/sample/hmc_nuts_unit_e.hpp>
-#include <stan/services/sample/hmc_static_dense_e_adapt.hpp>
-#include <stan/services/sample/hmc_static_diag_e_adapt.hpp>
-#include <stan/services/sample/hmc_static_unit_e_adapt.hpp>
-#include <stan/services/sample/hmc_static_dense_e.hpp>
-#include <stan/services/sample/hmc_static_diag_e.hpp>
-#include <stan/services/sample/hmc_static_unit_e.hpp>
-#include <stan/services/sample/fixed_param.hpp>
-#include <stan/services/optimize/bfgs.hpp>
-#include <stan/services/optimize/lbfgs.hpp>
-#include <stan/services/optimize/newton.hpp>
-#include <stan/services/experimental/advi/fullrank.hpp>
-#include <stan/services/experimental/advi/meanfield.hpp>
-
-#define SERVICE_FUN_DECL(SERVICE_TYPE, FUN_NAME, TYPE_NAME) \
-  auto FUN_NAME = [](auto&&... args) { return stan::services::SERVICE_TYPE::FUN_NAME(args...); }; \
-  using TYPE_NAME = decltype(FUN_NAME); \
-  template <typename F, stan::require_same_t<F, TYPE_NAME>* = nullptr> \
-  auto services_fun() { return rstandev::FUN_NAME; } \
+#include <helpers/typedefs.hpp>
+#include <stan/math/prim/meta.hpp>
 
 namespace rstandev {
-  SERVICE_FUN_DECL(sample, hmc_nuts_dense_e_adapt, NutsDenseAdaptT);
-  SERVICE_FUN_DECL(sample, hmc_nuts_diag_e_adapt, NutsDiagAdaptT);
-  SERVICE_FUN_DECL(sample, hmc_nuts_unit_e_adapt, NutsUnitAdaptT);
-  SERVICE_FUN_DECL(sample, hmc_nuts_dense_e, NutsDenseT);
-  SERVICE_FUN_DECL(sample, hmc_nuts_diag_e, NutsDiagT);
-  SERVICE_FUN_DECL(sample, hmc_nuts_unit_e, NutsUnitT);
-  SERVICE_FUN_DECL(sample, hmc_static_dense_e_adapt, StaticDenseAdaptT);
-  SERVICE_FUN_DECL(sample, hmc_static_diag_e_adapt, StaticDiagAdaptT);
-  SERVICE_FUN_DECL(sample, hmc_static_unit_e_adapt, StaticUnitAdaptT);
-  SERVICE_FUN_DECL(sample, hmc_static_dense_e, StaticDenseT);
-  SERVICE_FUN_DECL(sample, hmc_static_diag_e, StaticDiagT);
-  SERVICE_FUN_DECL(sample, hmc_static_unit_e, StaticUnitT);
-  SERVICE_FUN_DECL(sample, fixed_param, FixedParamT);
-
-  SERVICE_FUN_DECL(optimize, bfgs, BFGST);
-  SERVICE_FUN_DECL(optimize, lbfgs, LBFGST);
-  SERVICE_FUN_DECL(optimize, newton, NewtonT);
-
-  SERVICE_FUN_DECL(experimental::advi, fullrank, FullRankT);
-  SERVICE_FUN_DECL(experimental::advi, meanfield, MeanFieldT);
-
-  template <typename T>
-  using is_multi_chain = stan::math::disjunction<
-    std::is_same<T, NutsDenseAdaptT>,
-    std::is_same<T, NutsDiagAdaptT>
-  >;
-
-  template <typename T>
-  using is_advi = stan::math::disjunction<
-    std::is_same<T, FullRankT>,
-    std::is_same<T, MeanFieldT>
-  >;
-
-  template <typename T>
-  using is_optimize = stan::math::disjunction<
-    std::is_same<T, BFGST>,
-    std::is_same<T, LBFGST>,
-    std::is_same<T, NewtonT>
-  >;
-
-  template <typename T>
-  using is_dense = stan::math::disjunction<
-    std::is_same<T, NutsDenseAdaptT>,
-    std::is_same<T, NutsDenseT>,
-    std::is_same<T, StaticDenseAdaptT>,
-    std::is_same<T, StaticDenseT>
-  >;
-
-  template <typename T>
-  using is_diag = stan::math::disjunction<
-    std::is_same<T, NutsDiagAdaptT>,
-    std::is_same<T, NutsDiagT>,
-    std::is_same<T, StaticDiagAdaptT>,
-    std::is_same<T, StaticDiagT>
-  >;
-
-  template <typename T>
-  using is_unit = stan::math::disjunction<
-    std::is_same<T, NutsUnitAdaptT>,
-    std::is_same<T, NutsUnitT>,
-    std::is_same<T, StaticUnitAdaptT>,
-    std::is_same<T, StaticUnitT>
-  >;
-
-  template <typename T>
-  using is_adapt = stan::math::disjunction<
-    std::is_same<T, NutsDenseAdaptT>,
-    std::is_same<T, NutsDiagAdaptT>,
-    std::is_same<T, NutsUnitAdaptT>,
-    std::is_same<T, StaticDenseAdaptT>,
-    std::is_same<T, StaticDiagAdaptT>,
-    std::is_same<T, StaticUnitAdaptT>
-  >;
-
-  template <typename T>
-  using needs_inv_metric = stan::math::disjunction<
-    is_dense<T>,
-    is_diag<T>
-  >;
-
   template <typename F, stan::require_any_same_t<F, NutsUnitAdaptT, StaticUnitAdaptT>* = nullptr>
-  inline static auto arg_types() {
+  inline static auto service_arg_types() {
     return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
@@ -132,7 +28,7 @@ namespace rstandev {
   }
 
   template <typename F, stan::require_all_same_t<F, FixedParamT>* = nullptr>
-  inline static auto arg_types() {
+  inline static auto service_arg_types() {
     return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
@@ -144,7 +40,7 @@ namespace rstandev {
   }
 
   template <typename F, stan::require_t<is_advi<F>>* = nullptr>
-  inline static auto arg_types() {
+  inline static auto service_arg_types() {
     return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
@@ -162,7 +58,7 @@ namespace rstandev {
   }
 
   template <typename F, stan::require_all_same_t<F, BFGST>* = nullptr>
-  inline static auto arg_types() {
+  inline static auto service_arg_types() {
     return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
@@ -180,7 +76,7 @@ namespace rstandev {
   }
 
   template <typename F, stan::require_all_same_t<F, LBFGST>* = nullptr>
-  inline static auto arg_types() {
+  inline static auto service_arg_types() {
     return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
@@ -199,7 +95,7 @@ namespace rstandev {
   }
 
   template <typename F, stan::require_all_same_t<F, NewtonT>* = nullptr>
-  inline static auto arg_types() {
+  inline static auto service_arg_types() {
     return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
@@ -211,7 +107,7 @@ namespace rstandev {
 
   template <typename F, stan::require_t<is_adapt<F>>* = nullptr,
             stan::require_all_not_same_t<F, NutsUnitAdaptT, StaticUnitAdaptT>* = nullptr>
-  inline static auto arg_types() {
+  inline static auto service_arg_types() {
     return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
@@ -238,7 +134,7 @@ namespace rstandev {
             stan::require_all_not_same_t<F, FixedParamT>* = nullptr,
             stan::require_not_t<is_optimize<F>>* = nullptr,
             stan::require_not_t<is_advi<F>>* = nullptr>
-  inline static auto arg_types() {
+  inline static auto service_arg_types() {
     return std::make_tuple(
       StanArg<size_t>("random_seed"),
       StanArg<int>("id"),
@@ -255,5 +151,6 @@ namespace rstandev {
   }
 
 } // namespace rstandev
+
 
 #endif

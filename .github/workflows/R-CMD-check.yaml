@@ -34,6 +34,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Checkout Math & Stan upstream submodules
+        run: git submodule update --init --recursive
 
       - uses: r-lib/actions/setup-pandoc@v2
 

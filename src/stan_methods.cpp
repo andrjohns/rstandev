@@ -1,17 +1,9 @@
 
-#include <helpers/apply_service_function.hpp>
-#include <cpp11/list.hpp>
-#include <cpp11/strings.hpp>
+#include <rstandev.hpp>
+#include <cpp11.hpp>
 #include <tbb/global_control.h>
 #include <stan/model/model_base.hpp>
 #include <stan/model/log_prob_grad.hpp>
-#include <helpers/var_context.hpp>
-#include <cpp11/external_pointer.hpp>
-#include <cpp11/as.hpp>
-#include <cpp11/list.hpp>
-#include <cpp11/doubles.hpp>
-#include <cpp11/strings.hpp>
-#include <cpp11/named_arg.hpp>
 #include <R.h>
 #include <Rcpp/iostream/Rstreambuf.h>
 #include <boost/random/additive_combine.hpp>

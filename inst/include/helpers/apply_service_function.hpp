@@ -3,9 +3,12 @@
 
 #include <stan/model/model_base.hpp>
 #include <helpers/var_context.hpp>
-#include <helpers/service_functions.hpp>
+#include <helpers/service_function_wrappers.hpp>
+#include <helpers/typedefs.hpp>
+#include <helpers/service_arg_types.hpp>
 #include <helpers/extract_args.hpp>
 #include <helpers/inv_metric.hpp>
+#include <helpers/select_service_args.hpp>
 #include <R.h>
 #include <Rcpp/iostream/Rstreambuf.h>
 #include <unordered_map>
@@ -22,40 +25,12 @@ namespace internal {
                                   ArgsListT&& args) {
     decltype(auto) args_tuple = std::tuple_cat(
             std::forward_as_tuple(model, num_chains, init_contexts, inv_metrics),
-            extract_args(arg_types<ServiceFunT>(), args),
+            extract_args(service_arg_types<ServiceFunT>(), args),
             std::forward_as_tuple(interrupt, logger, init_writers, sample_writers, diagnostic_writers));
     return stan::math::apply(
           services_fun<ServiceFunT>(),
           std::forward<decltype(args_tuple)>(args_tuple)
         );
-  }
-
-  template <typename ServiceFunT, typename ModelT, typename InitContextsT, typename InvMetricsT,
-            stan::require_not_t<needs_inv_metric<ServiceFunT>>* = nullptr>
-  decltype(auto) get_args_head(ModelT&& model, InitContextsT&& init_contexts, InvMetricsT&& inv_metrics) {
-    return std::forward_as_tuple(model, init_contexts);
-  }
-
-  template <typename ServiceFunT, typename ModelT, typename InitContextsT, typename InvMetricsT,
-            stan::require_t<needs_inv_metric<ServiceFunT>>* = nullptr>
-  decltype(auto) get_args_head(ModelT&& model, InitContextsT&& init_contexts, InvMetricsT&& inv_metrics) {
-    return std::forward_as_tuple(model, init_contexts, inv_metrics);
-  }
-
-  template <typename ServiceFunT, typename InterruptT, typename LoggerT, typename InitWritersT,
-            typename SampleWritersT, typename DiagnosticWritersT,
-            stan::require_not_t<is_optimize<ServiceFunT>>* = nullptr>
-  decltype(auto) get_args_tail(InterruptT&& interrupt, LoggerT&& logger, InitWritersT&& init_writers,
-                               SampleWritersT&& sample_writers, DiagnosticWritersT&& diagnostic_writers) {
-    return std::forward_as_tuple(interrupt, logger, init_writers, sample_writers, diagnostic_writers);
-  }
-
-  template <typename ServiceFunT, typename InterruptT, typename LoggerT, typename InitWritersT,
-            typename SampleWritersT, typename DiagnosticWritersT,
-            stan::require_t<is_optimize<ServiceFunT>>* = nullptr>
-  decltype(auto) get_args_tail(InterruptT&& interrupt, LoggerT&& logger, InitWritersT&& init_writers,
-                               SampleWritersT&& sample_writers, DiagnosticWritersT&& diagnostic_writers) {
-    return std::forward_as_tuple(interrupt, logger, init_writers, sample_writers);
   }
 
   template <typename ServiceFunT, typename ModelT, typename NumChainsT, typename InitContextsT,
@@ -66,7 +41,7 @@ namespace internal {
                                   InvMetricsT&& inv_metrics, InterruptT&& interrupt, LoggerT&& logger, InitWritersT&& init_writers,
                                   SampleWritersT&& sample_writers, DiagnosticWritersT&& diagnostic_writers,
                                   ArgsListT&& args) {
-      decltype(auto) args_tuple = extract_args(arg_types<ServiceFunT>(), args);
+      decltype(auto) args_tuple = extract_args(service_arg_types<ServiceFunT>(), args);
       tbb::parallel_for(
         tbb::blocked_range<size_t>(0, num_chains, 1),
         [args_tuple, &model, &interrupt, &logger, &init_contexts, &sample_writers,
@@ -75,12 +50,12 @@ namespace internal {
             int res = stan::math::apply(
               services_fun<ServiceFunT>(),
               std::tuple_cat(
-                get_args_head<ServiceFunT>(
+                select_service_args_head<ServiceFunT>(
                   std::forward<decltype(model)>(model),
                   std::forward<decltype(*(init_contexts[i]))>(*(init_contexts[i])),
                   std::forward<decltype(*(inv_metrics[i]))>(*(inv_metrics[i]))),
                 args_tuple,
-                get_args_tail<ServiceFunT>(
+                select_service_args_tail<ServiceFunT>(
                   std::forward<decltype(interrupt)>(interrupt),
                   std::forward<decltype(logger)>(logger),
                   std::forward<decltype(init_writers[i])>(init_writers[i]),
@@ -93,9 +68,9 @@ namespace internal {
         tbb::simple_partitioner());
       return 1;
   }
-}
+} // namespace internal
 
-using context_vector = std::vector<std::shared_ptr<stan::io::var_context>>;
+
   template <typename F>
   int apply_service_function(cpp11::list args) {
     size_t num_chains = cpp11::as_cpp<size_t>(args["num_chains"]);
@@ -161,6 +136,6 @@ using context_vector = std::vector<std::shared_ptr<stan::io::var_context>>;
       std::forward<decltype(args)>(args)
     );
   }
-}
+} // namespace rstandev
 
 #endif
