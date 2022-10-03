@@ -1,3 +1,5 @@
 mkdir -p inst/include/stan
 cp -r inst/include/upstream/stan/lib/stan_math/stan inst/include/
 cp -r inst/include/upstream/stan/src/stan inst/include/
+
+rm src/Makevars.in
