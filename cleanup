@@ -1,3 +1,12 @@
+#! /bin/sh
+
+CXXFLAGS=`"${R_HOME}/bin/Rscript" -e "RcppParallel::CxxFlags()"`
+LIBS=`"${R_HOME}/bin/Rscript" -e "RcppParallel::LdFlags()"`
+
+cp src/Makevars.in src/Makevars
+echo "PKG_CXXFLAGS=" $CXXFLAGS >> src/Makevars
+echo "PKG_LIBS=" $LIBS >> src/Makevars
+
 mkdir -p inst/include/stan
 cp -r inst/include/upstream/stan/lib/stan_math/stan inst/include/
 cp -r inst/include/upstream/stan/src/stan inst/include/

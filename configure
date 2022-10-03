@@ -1,9 +1,0 @@
-#! /bin/sh
-
-CXXFLAGS=`"${R_HOME}/bin/Rscript" -e "RcppParallel::CxxFlags()"`
-LIBS=`"${R_HOME}/bin/Rscript" -e "RcppParallel::LdFlags()"`
-
-cp src/Makevars.in src/Makevars
-echo "PKG_CXXFLAGS=" $CXXFLAGS >> src/Makevars
-echo "PKG_LIBS=" $LIBS >> src/Makevars
-
