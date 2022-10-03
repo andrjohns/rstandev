@@ -8,3 +8,4 @@
 *.so
 *.dll
 src/Makevars
+inst/include/stan

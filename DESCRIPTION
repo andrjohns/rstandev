@@ -23,8 +23,10 @@ Imports:
     RcppParallel,
     RcppEigen,
     BH,
-    sundialr
-LinkingTo: Rcpp, RcppEigen, BH, RcppParallel, sundialr, cpp11
+    sundialr,
+    rapidjsonr,
+    jsonlite
+LinkingTo: Rcpp, RcppEigen, BH, RcppParallel, sundialr, cpp11, rapidjsonr
 URL: https://github.com/andrjohns/rstan.dev
 BugReports: https://github.com/andrjohns/rstan.dev/issues
 Suggests:
